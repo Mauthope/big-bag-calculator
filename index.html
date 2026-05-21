@@ -392,8 +392,7 @@
                     <option value="Corpou">Corpo U</option>
                 </select>
             </div>
-
-            <div class="form-group">
+                   <div class="form-group">
                 <label>Material</label>
                 <select id="in_material" class="form-control">
                     <option value="Farinha">Farinha</option>
@@ -409,6 +408,16 @@
             </div>
 
             <div class="form-group">
+                <label>Padrão</label>
+                <select id="in_padrao" class="form-control">
+                    <option value="Multi Way">Multi Way</option>
+                    <option value="One Way">One Way</option>
+                    <option value="Fertilizante">Fertilizante</option>
+                    <option value="Travado">Travado</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <label>Liner</label>
                 <div class="radio-group">
                     <div>
@@ -420,16 +429,6 @@
                         <label for="struct_no_liner" class="radio-label">Sem liner</label>
                     </div>
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label>Padrão</label>
-                <select id="in_padrao" class="form-control">
-                    <option value="Multi Way">Multi Way</option>
-                    <option value="One Way">One Way</option>
-                    <option value="Fertilizante">Fertilizante</option>
-                    <option value="Travado">Travado</option>
-                </select>
             </div>
 
             <div class="form-group">
@@ -754,6 +753,9 @@
             const bagShape = bagShapeSelect.value;
             const structPlano = document.getElementById('struct_plano');
             const structTubular = document.getElementById('struct_tubular');
+            const padrao = document.getElementById('in_padrao').value;
+            const structLiner = document.getElementById('struct_liner');
+            const structNoLiner = document.getElementById('struct_no_liner');
             
             // Rule: 4 painéis, 8 painéis and Corpo U (Corpou) cannot be tubular
             const isFlatOnly = ['4 painéis', '8 painéis', 'Corpou'].includes(bagShape);
@@ -774,6 +776,17 @@
                     opt.disabled = isTubularSelected;
                 }
             });
+
+            // Rule: any "Travado" option (Padrão = Travado OR Tipo = Circular Travado) cannot have liner
+            const isTravado = (padrao === 'Travado' || bagShape === 'Circular Travado');
+            if (isTravado) {
+                structLiner.disabled = true;
+                if (structLiner.checked) {
+                    structNoLiner.checked = true;
+                }
+            } else {
+                structLiner.disabled = false;
+            }
         }
 
         // Logic Calculator
