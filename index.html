@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Técnica - Big Bags</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0f172a; /* Slate 900 */
+            --bg-card: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
+            --bg-input: rgba(15, 23, 42, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
+            --border-highlight: rgba(6, 182, 212, 0.5); /* Cyan */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #06b6d4; /* Cyan 500 */
+            --accent-glow: rgba(6, 182, 212, 0.3);
+            --radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(6, 182, 212, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #06b6d4, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glassmorphism Panel */
+        .panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 1.25rem;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .form-control {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+            padding-right: 2.5rem;
+        }
+
+        .radio-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .radio-label:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-input:checked + .radio-label {
+            background: rgba(6, 182, 212, 0.15);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        /* Outputs Dashboard */
+        .outputs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .outputs-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .output-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .output-card:hover {
+            border-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        .card-badge {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-badge.warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+        }
+
+        .card-badge.muted {
+            background: rgba(148, 163, 184, 0.15);
+            color: #94a3b8;
+        }
+
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .data-label {
+            color: var(--text-muted);
+        }
+
+        .data-value {
+            font-weight: 600;
+            color: #f8fafc;
+        }
+
+        .data-total {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--border);
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--accent);
+        }
+
+        /* Descrição Card Full Width */
+        .desc-card {
+            grid-column: 1 / -1;
+        }
+
+        .desc-text {
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            white-space: pre-wrap;
+        }
+
+        /* Utility Adaptor */
+        .adaptor-section {
+            margin-top: 1.5rem;
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border);
+        }
+
+        .adaptor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 1rem;
+            align-items: end;
+        }
+
+        @media (max-width: 640px) {
+            .adaptor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .result-box {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid var(--accent);
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .result-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Notification */
+        .alert-banner {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Calculadora Técnica</h1>
+        <p>Dimensionamento e Engenharia de Big Bags</p>
+    </div>
+
+    <div class="container">
+        <!-- Left Panel: Inputs -->
+        <div class="panel">
+            <h2 class="panel-title">Parâmetros</h2>
+
+            <div class="alert-banner" id="typeAlert">
+                Atenção: Apenas o Tipo C1 está implementado nesta versão.
+            </div>
+
+            <div class="form-group">
+                <label>Modelo</label>
+                <select id="in_type" class="form-control">
+                    <option value="C1">C1</option>
+                    <option value="C2">C2</option>
+                    <option value="C3">C3</option>
+                    <option value="C4">C4</option>
+                    <option value="C5">C5</option>
+                    <option value="C6">C6</option>
+                    <option value="C9">C9</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tipo</label>
+                <select id="in_bag_shape" class="form-control">
+                    <option value="Circular Travado">Circular Travado</option>
+                    <option value="Circular">Circular</option>
+                    <option value="4 painéis">4 painéis</option>
+                    <option value="8 painéis">8 painéis</option>
+                    <option value="Gota">Gota</option>
+                    <option value="Sling">Sling</option>
+                    <option value="Corpou">Corpo U</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Material</label>
+                <select id="in_material" class="form-control">
+                    <option value="Farinha">Farinha</option>
+                    <option value="PoFino">Pó Fino</option>
+                    <option value="Acucar">Açúcar</option>
+                    <option value="Fertilizante">Fertilizante</option>
+                    <option value="Sementes">Sementes</option>
+                    <option value="Graos">Grãos</option>
+                    <option value="Quimicospet">Químicos/Petroquímicos</option>
+                    <option value="Minerais">Minerais</option>
+                    <option value="Racao">Ração</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Liner</label>
+                <div class="radio-group">
+                    <div>
+                        <input type="radio" id="struct_liner" name="liner" value="com" class="radio-input" checked>
+                        <label for="struct_liner" class="radio-label">Com Liner</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="struct_no_liner" name="liner" value="sem" class="radio-input">
+                        <label for="struct_no_liner" class="radio-label">Sem liner</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Padrão</label>
+                <select id="in_padrao" class="form-control">
+                    <option value="Multi Way">Multi Way</option>
+                    <option value="One Way">One Way</option>
+                    <option value="Fertilizante">Fertilizante</option>
+                    <option value="Travado">Travado</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Estrutura</label>
+                <div class="radio-group">
+                    <div>
+                        <input type="radio" id="struct_plano" name="structure" value="Plano" class="radio-input" checked>
+                        <label for="struct_plano" class="radio-label">Plano</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="struct_tubular" name="structure" value="Tubular" class="radio-input">
+                        <label for="struct_tubular" class="radio-label">Tubular</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Largura (cm)</label>
+                    <input type="number" id="in_width" class="form-control" value="90">
+                </div>
+                <div class="form-group">
+                    <label>Comprimento (cm)</label>
+                    <input type="number" id="in_length" class="form-control" value="90">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Altura (cm)</label>
+                    <input type="number" id="in_height" class="form-control" value="120">
+                </div>
+                <div class="form-group">
+                    <label>Gramatura (g)</label>
+                    <input type="number" id="in_gram" class="form-control" value="160">
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Capacidade (kg)</label>
+                    <input type="number" id="in_cap" class="form-control" value="1000">
+                </div>
+                <div class="form-group">
+                    <label>Fator de Seg.</label>
+                    <select id="in_factor" class="form-control">
+                        <option value="5">5:1</option>
+                        <option value="6">6:1</option>
+                        <option value="8">8:1</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Outputs -->
+        <div class="outputs-wrapper">
+            <div class="outputs-grid">
+                
+                <!-- Corpo Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Corpo</div>
+                        <div class="card-badge" id="out_r_badge">R: --</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Corte Altura</span>
+                        <span class="data-value" id="out_body_h">-- cm</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Corte Largura</span>
+                        <span class="data-value" id="out_body_w">-- cm</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Corte Compr.</span>
+                        <span class="data-value" id="out_body_l">-- cm</span>
+                    </div>
+                    
+                    <div style="margin-top: 1rem;">
+                        <div class="data-row">
+                            <span class="data-label">Tecido</span>
+                            <span class="data-value" id="out_tecido">-- g</span>
+                        </div>
+                        <div class="data-row">
+                            <span class="data-label">Lâmina</span>
+                            <span class="data-value" id="out_lamina">-- g</span>
+                        </div>
+                        <div class="data-total">
+                            <span>Gramatura Total</span>
+                            <span id="out_total_gram">-- g</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fundo Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Fundo</div>
+                        <div class="card-badge" style="background: rgba(255,255,255,0.1); color:#fff">Padrão</div>
+                    </div>
+                    <div class="data-row" style="color: var(--text-muted); font-size: 0.9rem;">
+                        Estrutura do fundo dimensionada conforme o modelo selecionado. A base segue o formato padrão da configuração do corpo.
+                    </div>
+                    <div class="data-row" style="margin-top: 1rem;">
+                        <span class="data-label">Medida Mín. (L x C)</span>
+                        <span class="data-value" id="out_fundo_dim">-- cm</span>
+                    </div>
+                </div>
+
+                <!-- Alça Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Alça</div>
+                        <div class="card-badge" id="out_alca_badge">Simples</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Resistência (H)</span>
+                        <span class="data-value" id="out_alca_res">-- kgf</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fixação (L)</span>
+                        <span class="data-value" id="out_alca_fix">-- cm</span>
+                    </div>
+                </div>
+
+                <!-- Topo Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Topo</div>
+                        <div class="card-badge" id="out_topo_badge">Simples</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Resistência (H)</span>
+                        <span class="data-value" id="out_topo_res">-- kgf</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fixação (L)</span>
+                        <span class="data-value" id="out_topo_fix">-- cm</span>
+                    </div>
+                </div>
+
+                <!-- Utilização Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Utilização</div>
+                        <div class="card-badge" id="out_util_badge">Simples</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Carga Trabalho</span>
+                        <span class="data-value" id="out_util_res">-- kg</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fator Seg.</span>
+                        <span class="data-value" id="out_util_fix">--</span>
+                    </div>
+                </div>
+
+                <!-- Costura Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Costura</div>
+                        <div class="card-badge" id="out_costura_badge">Simples</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Resistência (H)</span>
+                        <span class="data-value" id="out_costura_res">-- kgf</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Sobreposição</span>
+                        <span class="data-value" id="out_costura_fix">-- cm</span>
+                    </div>
+                </div>
+
+                <!-- Empilhamento Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Empilhamento</div>
+                        <div class="card-badge" id="out_empilhamento_badge">Simples</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Carga Limite</span>
+                        <span class="data-value" id="out_empilhamento_res">-- kg</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Estabilidade</span>
+                        <span class="data-value" id="out_empilhamento_fix">--</span>
+                    </div>
+                </div>
+
+                <!-- Liner Card -->
+                <div class="output-card panel">
+                    <div class="card-header">
+                        <div class="card-title">Liner</div>
+                        <div class="card-badge" id="out_liner_badge">N/A</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Espessura</span>
+                        <span class="data-value" id="out_liner_thick">-- micras</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fixação</span>
+                        <span class="data-value" id="out_liner_fix">--</span>
+                    </div>
+                </div>
+
+                <!-- Descrição Card -->
+                <div class="output-card panel desc-card">
+                    <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                        <div class="card-title">Especificação Técnica</div>
+                    </div>
+                    <div class="desc-text" id="out_desc">--</div>
+                </div>
+
+            </div>
+
+            <!-- Volume Adaptor -->
+            <div class="panel adaptor-section">
+                <h3 class="panel-title" style="margin-bottom: 1rem; font-size: 1.1rem;">Adaptador de Volume (Regra de Três)</h3>
+                <div class="adaptor-grid">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Nova Capacidade Alvo (kg)</label>
+                        <input type="number" id="adp_target_cap" class="form-control" value="1200">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Variável para Ajuste</label>
+                        <select id="adp_var" class="form-control">
+                            <option value="altura">Altura</option>
+                            <option value="largura">Largura</option>
+                            <option value="comprimento">Comprimento</option>
+                        </select>
+                    </div>
+                    <div class="result-box">
+                        <div class="result-label">Nova Medida</div>
+                        <div class="result-value" id="adp_result">-- cm</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Descriptions DB
+        const descriptions = {
+            "One Way": "FIO 1800 DN: ALÇAS; FIO 3600 DN: FUNDO; FIO 2520 DN: CORPO;\nCOSTURA DAS ALÇAS: COSTURADAS INTERNAMENTE COSTURA INFERIOR: CORPO + FUNDO MODELO ENVELOPE COM DOBRA EXTERNA; PORTA DOCUMENTO + ETIQUETA DE IDENTIFICAÇÃO CENTRALIZADOS NA FACE 'A' DO BIG BAG; COSTURA SUPERIOR: CORPO COM DOBRA INTERNA; IMPRESSÃO: INSTRUÇÕES NA O.P; ER 100%",
+            "Fertilizante": "FIO 1800 DN : ALÇAS; FIO 2520 DN : FUNDO;\nCOSTURA DAS ALÇAS: COSTURADAS EXTERNAMENTE; COSTURA INFERIOR: CORPO COM DOBRA INTERNA + FUNDO COSTURADO À FIO EXTERNO; PORTA DOCUMENTO IMPRESO CENTRALIZADO NA FACE 'A' DO BIG BAG; IMPRESSÃO: INSTRUÇÕES NA O.P",
+            "Travado": "FIO 1800 DN : ALÇAS; FIO 3600 DN : FECHAMENTO DOS PAINÉIS E FUNDO; FIO 2520 DN TG :TRAVAS, TOPO;\nINICIAR COSTURA DAS TRAVAS À 10 CM DA BASE INFERIOR (FUNDO) DO CORTE DO TECIDO; FIXAÇÃO DAS TRAVAS SOBRE O FIO DE MARCAÇÃO AMARELO NA LATERAL DO TECIDO; COSTURA LATERAL PAINEL: COM DOBRA EXTERNA; COSTURA DAS ALÇAS: COSTURAS INTERNAMENTE; COSTURA INFERIOR: CORPO + FUNDO MODELO ENVELOPE COM DOBRA EXTERNA; COSTURA SUPERIOR: CORPO COM DOBRA INTERNA; PORTA DOCUMENTO + ETIQUETA DE IDENTIFICAÇÃO CENTRALIZADOS NA FACE 'A' DO BIG BAG; IMPRESSÃO: INSTRUÇÕES NA O.P; ER 100%",
+            "Multi Way": "FIO 1800 DN: ALÇAS; FIO 3600 DN: FUNDO; FIO 2520 DN: CORPO; REUTILIZÁVEL;\nCOSTURA DAS ALÇAS: COSTURADAS INTERNAMENTE COSTURA INFERIOR: CORPO + FUNDO MODELO ENVELOPE COM DOBRA EXTERNA; PORTA DOCUMENTO + ETIQUETA DE IDENTIFICAÇÃO CENTRALIZADOS NA FACE 'A' DO BIG BAG; COSTURA SUPERIOR: CORPO COM DOBRA INTERNA; IMPRESSÃO: INSTRUÇÕES NA O.P; ER 100%"
+        };
+
+        // Get DOM Elements
+        const formEls = document.querySelectorAll('input, select');
+        
+        // Output elements
+        const outRBadge = document.getElementById('out_r_badge');
+        const outBodyH = document.getElementById('out_body_h');
+        const outBodyW = document.getElementById('out_body_w');
+        const outBodyL = document.getElementById('out_body_l');
+        const outTecido = document.getElementById('out_tecido');
+        const outLamina = document.getElementById('out_lamina');
+        const outTotalGram = document.getElementById('out_total_gram');
+        const outFundoDim = document.getElementById('out_fundo_dim');
+        
+        const outAlcaBadge = document.getElementById('out_alca_badge');
+        const outAlcaRes = document.getElementById('out_alca_res');
+        const outAlcaFix = document.getElementById('out_alca_fix');
+
+        // New outputs
+        const outTopoBadge = document.getElementById('out_topo_badge');
+        const outTopoRes = document.getElementById('out_topo_res');
+        const outTopoFix = document.getElementById('out_topo_fix');
+
+        const outUtilBadge = document.getElementById('out_util_badge');
+        const outUtilRes = document.getElementById('out_util_res');
+        const outUtilFix = document.getElementById('out_util_fix');
+
+        const outCosturaBadge = document.getElementById('out_costura_badge');
+        const outCosturaRes = document.getElementById('out_costura_res');
+        const outCosturaFix = document.getElementById('out_costura_fix');
+
+        const outEmpilhamentoBadge = document.getElementById('out_empilhamento_badge');
+        const outEmpilhamentoRes = document.getElementById('out_empilhamento_res');
+        const outEmpilhamentoFix = document.getElementById('out_empilhamento_fix');
+
+        const outLinerBadge = document.getElementById('out_liner_badge');
+        const outLinerThick = document.getElementById('out_liner_thick');
+        const outLinerFix = document.getElementById('out_liner_fix');
+        
+        const outDesc = document.getElementById('out_desc');
+        const typeAlert = document.getElementById('typeAlert');
+
+        const adpTargetCap = document.getElementById('adp_target_cap');
+        const adpVar = document.getElementById('adp_var');
+        const adpResult = document.getElementById('adp_result');
+
+        // Logic Calculator
+        function calculate() {
+            // Inputs
+            const type = document.getElementById('in_type').value;
+            const bagShape = document.getElementById('in_bag_shape').value;
+            const material = document.getElementById('in_material').value;
+            const liner = document.querySelector('input[name="liner"]:checked').value;
+            const padrao = document.getElementById('in_padrao').value;
+            const structure = document.querySelector('input[name="structure"]:checked').value;
+            
+            const w = parseFloat(document.getElementById('in_width').value) || 0;
+            const l = parseFloat(document.getElementById('in_length').value) || 0;
+            const h = parseFloat(document.getElementById('in_height').value) || 0;
+            const cap = parseFloat(document.getElementById('in_cap').value) || 0;
+            const factor = parseFloat(document.getElementById('in_factor').value) || 5;
+
+            // Handle Type C1 restriction
+            if(type !== 'C1') {
+                typeAlert.style.display = 'block';
+            } else {
+                typeAlert.style.display = 'none';
+            }
+
+            // Global Variable R
+            const R = cap * factor;
+            outRBadge.textContent = `R: ${R}`;
+
+            // --- CORPO CALCULATION ---
+            let bodyH = h, bodyW = w, bodyL = l;
+            
+            // Adjust dimension addition based on Padrão select
+            if (padrao === 'One Way' || padrao === 'Travado' || padrao === 'Multi Way') {
+                bodyH += 12;
+                bodyW += 10;
+                bodyL += 10;
+            } else if (padrao === 'Fertilizante') {
+                bodyH += 6;
+                bodyW += 6;
+                bodyL += 6;
+            }
+
+            outBodyH.textContent = `${bodyH.toFixed(1)} cm`;
+            outBodyW.textContent = `${bodyW.toFixed(1)} cm`;
+            outBodyL.textContent = `${bodyL.toFixed(1)} cm`;
+            
+            outFundoDim.textContent = `${bodyW.toFixed(1)} x ${bodyL.toFixed(1)} cm`;
+
+            // Fabric & Lamination
+            let tecido = 0;
+            let lamina = 0;
+
+            if (structure === 'Plano') {
+                if (factor === 5) {
+                    if (R <= 5000) { tecido = 160; lamina = 25; }
+                    else if (R <= 6250) { tecido = 190; lamina = 25; }
+                    else if (R <= 7500) { tecido = 220; lamina = 25; }
+                    else { tecido = 220; lamina = 35; }
+                } else if (factor === 6 || factor === 8) {
+                    // Logic mapped identical to Fator 6 per plan
+                    if (R <= 6000) { tecido = 190; lamina = 25; }
+                    else if (R <= 7500) { tecido = 220; lamina = 25; }
+                    else { tecido = 220; lamina = 35; }
+                }
+            } else if (structure === 'Tubular') {
+                // Ignore factor
+                if (R <= 5000) { tecido = 160; lamina = 25; }
+                else if (R <= 7500) { tecido = 190; lamina = 25; }
+                else if (R <= 8500) { tecido = 220; lamina = 25; }
+                else { tecido = 240; lamina = 35; }
+            }
+
+            outTecido.textContent = `${tecido} g`;
+            outLamina.textContent = `${lamina} g`;
+            outTotalGram.textContent = `${tecido + lamina} g`;
+
+
+            // --- ALÇA CALCULATION ---
+            let rawH = Math.ceil(R / 4);
+            let isDouble = false;
+            
+            if (rawH > 1800) {
+                rawH = Math.ceil((R / 2) / 4);
+                isDouble = true;
+            }
+
+            const availableAlcas = [1250, 1500, 1800];
+            let finalH = availableAlcas.find(a => a >= rawH) || 1800; // default to 1800 if exceeds
+
+            outAlcaRes.textContent = `${finalH}`;
+            
+            if (isDouble) {
+                outAlcaBadge.textContent = 'Alça Dupla';
+                outAlcaBadge.className = 'card-badge warning';
+            } else {
+                outAlcaBadge.textContent = 'Simples';
+                outAlcaBadge.className = 'card-badge';
+            }
+
+            // Fixation
+            let fixation = 25;
+            if (R > 6500 && R <= 7500) fixation = 30;
+            else if (R > 7500) fixation = 35;
+            
+            outAlcaFix.textContent = `${fixation} cm`;
+
+
+            // --- TOPO CALCULATION ---
+            if (bagShape === 'Circular' || bagShape === 'Circular Travado') {
+                outTopoBadge.textContent = 'Válvula';
+                outTopoBadge.className = 'card-badge';
+            } else if (bagShape === 'Gota' || bagShape === 'Sling') {
+                outTopoBadge.textContent = 'Aberto';
+                outTopoBadge.className = 'card-badge muted';
+            } else {
+                outTopoBadge.textContent = 'Saia de Carga';
+                outTopoBadge.className = 'card-badge';
+            }
+            const topoRes = R <= 5000 ? 600 : (R <= 7500 ? 800 : 1000);
+            outTopoRes.textContent = `${topoRes} kgf`;
+            outTopoFix.textContent = '50 cm';
+
+
+            // --- UTILIZAÇÃO CALCULATION ---
+            const isFoodGrade = ['Farinha', 'Acucar', 'Graos', 'Sementes'].includes(material);
+            if (isFoodGrade) {
+                outUtilBadge.textContent = 'Alimentício';
+                outUtilBadge.className = 'card-badge warning'; // gold/warning for premium look
+            } else {
+                outUtilBadge.textContent = 'Industrial';
+                outUtilBadge.className = 'card-badge';
+            }
+            outUtilRes.textContent = `${cap} kg`;
+            outUtilFix.textContent = `${factor}:1`;
+
+
+            // --- COSTURA CALCULATION ---
+            if (['Farinha', 'PoFino'].includes(material)) {
+                outCosturaBadge.textContent = 'Vedação Dupla';
+                outCosturaBadge.className = 'card-badge warning';
+            } else if (['Acucar', 'Fertilizante'].includes(material)) {
+                outCosturaBadge.textContent = 'Vedação Simples';
+                outCosturaBadge.className = 'card-badge';
+            } else {
+                outCosturaBadge.textContent = 'Padrão';
+                outCosturaBadge.className = 'card-badge muted';
+            }
+            const costuraRes = Math.round(R * 0.7);
+            outCosturaRes.textContent = `${costuraRes} kgf`;
+            outCosturaFix.textContent = R > 7500 ? '2.5 cm' : '2.0 cm';
+
+
+            // --- EMPILHAMENTO CALCULATION ---
+            let stackLevels = 1;
+            if (factor === 5) {
+                outEmpilhamentoBadge.textContent = '1+1 Níveis';
+                outEmpilhamentoBadge.className = 'card-badge muted';
+                stackLevels = 1;
+            } else if (factor === 6) {
+                outEmpilhamentoBadge.textContent = '1+2 Níveis';
+                outEmpilhamentoBadge.className = 'card-badge';
+                stackLevels = 2;
+            } else if (factor === 8) {
+                outEmpilhamentoBadge.textContent = '1+3 Níveis';
+                outEmpilhamentoBadge.className = 'card-badge warning';
+                stackLevels = 3;
+            }
+            outEmpilhamentoRes.textContent = `${cap * stackLevels} kg`;
+            // Calculate stability based on Width/Height ratio
+            const stabilityRatio = h > 0 ? (w / h) : 0;
+            outEmpilhamentoFix.textContent = stabilityRatio >= 0.85 ? 'Alta' : 'Média';
+
+
+            // --- LINER CALCULATION ---
+            if (liner === 'com') {
+                outLinerBadge.textContent = 'PEBD Ativo';
+                outLinerBadge.className = 'card-badge';
+                const thick = ['PoFino', 'Farinha'].includes(material) ? 70 : 50;
+                outLinerThick.textContent = `${thick} micras`;
+                const linerFixType = ['Circular Travado', 'Corpou'].includes(bagShape) ? 'Colado' : 'Costurado';
+                outLinerFix.textContent = linerFixType;
+            } else {
+                outLinerBadge.textContent = 'N/A';
+                outLinerBadge.className = 'card-badge muted';
+                outLinerThick.textContent = '-- micras';
+                outLinerFix.textContent = 'Sem Liner';
+            }
+
+
+            // --- DESCRIÇÃO ---
+            outDesc.textContent = descriptions[padrao] || '--';
+
+            calculateAdaptor();
+        }
+
+        // Volume Adaptor Calculation
+        function calculateAdaptor() {
+            const cap = parseFloat(document.getElementById('in_cap').value) || 1;
+            const targetCap = parseFloat(adpTargetCap.value) || 0;
+            const varType = adpVar.value; // 'altura', 'largura', 'comprimento'
+            
+            let currentDim = 0;
+            if (varType === 'altura') currentDim = parseFloat(document.getElementById('in_height').value) || 0;
+            else if (varType === 'largura') currentDim = parseFloat(document.getElementById('in_width').value) || 0;
+            else if (varType === 'comprimento') currentDim = parseFloat(document.getElementById('in_length').value) || 0;
+
+            if (cap > 0) {
+                const newDim = (currentDim * targetCap) / cap;
+                adpResult.textContent = `${newDim.toFixed(1)} cm`;
+            } else {
+                adpResult.textContent = '-- cm';
+            }
+        }
+
+        // Event Listeners
+        formEls.forEach(el => {
+            el.addEventListener('input', calculate);
+            el.addEventListener('change', calculate);
+        });
+
+        adpTargetCap.addEventListener('input', calculateAdaptor);
+        adpVar.addEventListener('change', calculateAdaptor);
+
+        // Initial Calculation
+        calculate();
+    </script>
+</body>
+</html>
