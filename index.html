@@ -478,14 +478,30 @@
             <!-- Teste de Carga / Simulação -->
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
                 <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Simulação de Carga</label>
-                <div class="grid-2" style="align-items: end;">
+                
+                <div class="grid-2" style="align-items: end; margin-bottom: 1rem;">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Capacidade Alvo (kg)</label>
                         <input type="number" id="in_test_cap" class="form-control" value="1200">
                     </div>
                     <div style="text-align: center;">
-                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">Status do Teste</label>
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">Resistência</label>
                         <span id="test_status_badge" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; font-weight: 700; border-radius: 6px; display: inline-block; width: 100%; text-transform: uppercase;">Atende</span>
+                    </div>
+                </div>
+
+                <div class="grid-2" style="align-items: end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Ajustar Dimensão</label>
+                        <select id="adp_var" class="form-control" style="font-size: 0.9rem; padding: 0.5rem 0.75rem;">
+                            <option value="altura">Altura</option>
+                            <option value="largura">Largura</option>
+                            <option value="comprimento">Comprimento</option>
+                        </select>
+                    </div>
+                    <div style="text-align: center;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">Medida Sugerida</label>
+                        <span id="adp_result" style="padding: 0.5rem 0.75rem; font-size: 0.9rem; font-weight: 700; border-radius: 6px; display: inline-block; width: 100%; background: var(--bg-input); border: 1px solid var(--border); color: #fff;">-- cm</span>
                     </div>
                 </div>
             </div>
@@ -722,6 +738,8 @@
 
         const inTestCap = document.getElementById('in_test_cap');
         const testStatusBadge = document.getElementById('test_status_badge');
+        const adpVar = document.getElementById('adp_var');
+        const adpResult = document.getElementById('adp_result');
 
         // Logic Calculator
         function calculate() {
@@ -1028,6 +1046,20 @@
                 testStatusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
                 testStatusBadge.style.color = '#ef4444';
                 testStatusBadge.style.border = '1px solid #ef4444';
+            }
+
+            // --- SUGGESTED DIMENSION (VOLUME ADAPTOR) ---
+            const varType = adpVar.value;
+            let currentDim = 0;
+            if (varType === 'altura') currentDim = parseFloat(document.getElementById('in_height').value) || 0;
+            else if (varType === 'largura') currentDim = parseFloat(document.getElementById('in_width').value) || 0;
+            else if (varType === 'comprimento') currentDim = parseFloat(document.getElementById('in_length').value) || 0;
+
+            if (cap > 0) {
+                const newDim = (currentDim * testCap) / cap;
+                adpResult.textContent = `${newDim.toFixed(1)} cm`;
+            } else {
+                adpResult.textContent = '-- cm';
             }
         }
 
