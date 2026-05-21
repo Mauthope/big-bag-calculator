@@ -175,6 +175,14 @@
             color: var(--accent);
         }
 
+        .radio-input:disabled + .radio-label {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: rgba(15, 23, 42, 0.2);
+            border-color: var(--border);
+            color: var(--text-muted);
+        }
+
         .grid-2 {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -741,8 +749,37 @@
         const adpVar = document.getElementById('adp_var');
         const adpResult = document.getElementById('adp_result');
 
+        function enforceRules() {
+            const bagShapeSelect = document.getElementById('in_bag_shape');
+            const bagShape = bagShapeSelect.value;
+            const structPlano = document.getElementById('struct_plano');
+            const structTubular = document.getElementById('struct_tubular');
+            
+            // Rule: 4 painéis, 8 painéis and Corpo U (Corpou) cannot be tubular
+            const isFlatOnly = ['4 painéis', '8 painéis', 'Corpou'].includes(bagShape);
+            
+            if (isFlatOnly) {
+                structTubular.disabled = true;
+                if (structTubular.checked) {
+                    structPlano.checked = true;
+                }
+            } else {
+                structTubular.disabled = false;
+            }
+
+            // If structure is Tubular, disable flat-only bag shapes in the select dropdown
+            const isTubularSelected = document.querySelector('input[name="structure"]:checked')?.value === 'Tubular';
+            Array.from(bagShapeSelect.options).forEach(opt => {
+                if (['4 painéis', '8 painéis', 'Corpou'].includes(opt.value)) {
+                    opt.disabled = isTubularSelected;
+                }
+            });
+        }
+
         // Logic Calculator
         function calculate() {
+            enforceRules();
+
             // Inputs
             const type = document.getElementById('in_type').value;
             const bagShape = document.getElementById('in_bag_shape').value;
