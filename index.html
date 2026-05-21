@@ -585,12 +585,20 @@
                         <div class="card-badge" id="out_costura_badge">Simples</div>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Resistência (H)</span>
-                        <span class="data-value" id="out_costura_res">-- kgf</span>
+                        <span class="data-label">Costura Topo</span>
+                        <span class="data-value" id="out_costura_topo">--</span>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Sobreposição</span>
-                        <span class="data-value" id="out_costura_fix">-- cm</span>
+                        <span class="data-label">Costura Fundo</span>
+                        <span class="data-value" id="out_costura_fundo">--</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Costura Acessório</span>
+                        <span class="data-value" id="out_costura_acessorio">--</span>
+                    </div>
+                    <div class="data-total" style="font-size: 0.95rem; font-weight: normal; border-top: 1px dashed var(--border); padding-top: 0.75rem; margin-top: 0.75rem;">
+                        <span class="data-label">Resistência Estimada</span>
+                        <span class="data-value" id="out_costura_res" style="color: var(--accent);">-- kgf</span>
                     </div>
                 </div>
 
@@ -698,7 +706,9 @@
 
         const outCosturaBadge = document.getElementById('out_costura_badge');
         const outCosturaRes = document.getElementById('out_costura_res');
-        const outCosturaFix = document.getElementById('out_costura_fix');
+        const outCosturaTopo = document.getElementById('out_costura_topo');
+        const outCosturaFundo = document.getElementById('out_costura_fundo');
+        const outCosturaAcessorio = document.getElementById('out_costura_acessorio');
 
         const outEmpilhamentoBadge = document.getElementById('out_empilhamento_badge');
         const outEmpilhamentoRes = document.getElementById('out_empilhamento_res');
@@ -851,19 +861,58 @@
 
 
             // --- COSTURA CALCULATION ---
-            if (['Farinha', 'PoFino'].includes(material)) {
+            let costuraTopo = '';
+            let costuraFundo = '';
+            let costuraAcessorio = '';
+
+            const isFinePowder = ['Farinha', 'PoFino'].includes(material);
+            const isMediumPowder = ['Acucar', 'Fertilizante'].includes(material);
+
+            // Costura Topo & Fundo logic
+            if (padrao === 'Fertilizante') {
+                costuraTopo = 'Dobra Simples';
+                costuraFundo = 'Dobra Interna + Fio Externo';
+            } else {
+                if (isFinePowder) {
+                    costuraTopo = 'Dobra Interna + Feltro e Cordão (Vedação Dupla)';
+                    costuraFundo = 'Dobra Externa + Feltro e Cordão (Vedação Dupla)';
+                } else if (isMediumPowder) {
+                    costuraTopo = 'Dobra Interna + Cordão (Vedação Simples)';
+                    costuraFundo = 'Dobra Externa + Cordão (Vedação Simples)';
+                } else {
+                    costuraTopo = 'Dobra Interna';
+                    costuraFundo = 'Dobra Externa';
+                }
+            }
+
+            // Costura Acessório logic
+            if (padrao === 'Fertilizante') {
+                costuraAcessorio = 'Costura Externa (Alças)';
+            } else if (padrao === 'Travado') {
+                costuraAcessorio = 'Costura Interna + Fixação de Travas (Fio Amarelo)';
+            } else {
+                costuraAcessorio = 'Costura Interna (Alças)';
+            }
+
+            // Update DOM
+            outCosturaTopo.textContent = costuraTopo;
+            outCosturaFundo.textContent = costuraFundo;
+            outCosturaAcessorio.textContent = costuraAcessorio;
+
+            // Seam badge
+            if (isFinePowder) {
                 outCosturaBadge.textContent = 'Vedação Dupla';
                 outCosturaBadge.className = 'card-badge warning';
-            } else if (['Acucar', 'Fertilizante'].includes(material)) {
+            } else if (isMediumPowder) {
                 outCosturaBadge.textContent = 'Vedação Simples';
                 outCosturaBadge.className = 'card-badge';
             } else {
                 outCosturaBadge.textContent = 'Padrão';
                 outCosturaBadge.className = 'card-badge muted';
             }
+
             const costuraRes = Math.round(R * 0.7);
             outCosturaRes.textContent = `${costuraRes} kgf`;
-            outCosturaFix.textContent = R > 7500 ? '2.5 cm' : '2.0 cm';
 
 
             // --- EMPILHAMENTO CALCULATION ---
