@@ -474,6 +474,21 @@
                     </select>
                 </div>
             </div>
+
+            <!-- Teste de Carga / Simulação -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
+                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Simulação de Carga</label>
+                <div class="grid-2" style="align-items: end;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Capacidade Alvo (kg)</label>
+                        <input type="number" id="in_test_cap" class="form-control" value="1200">
+                    </div>
+                    <div style="text-align: center;">
+                        <label style="font-size: 0.8rem; display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500;">Status do Teste</label>
+                        <span id="test_status_badge" style="padding: 0.5rem 0.75rem; font-size: 0.85rem; font-weight: 700; border-radius: 6px; display: inline-block; width: 100%; text-transform: uppercase;">Atende</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Right Panel: Outputs -->
@@ -576,6 +591,10 @@
                         <span class="data-label">Fator Seg.</span>
                         <span class="data-value" id="out_util_fix">--</span>
                     </div>
+                    <div class="data-row">
+                        <span class="data-label">Ciclo de Uso</span>
+                        <span class="data-value" id="out_util_ciclo">--</span>
+                    </div>
                 </div>
 
                 <!-- Costura Card -->
@@ -644,28 +663,7 @@
 
             </div>
 
-            <!-- Volume Adaptor -->
-            <div class="panel adaptor-section">
-                <h3 class="panel-title" style="margin-bottom: 1rem; font-size: 1.1rem;">Adaptador de Volume (Regra de Três)</h3>
-                <div class="adaptor-grid">
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>Nova Capacidade Alvo (kg)</label>
-                        <input type="number" id="adp_target_cap" class="form-control" value="1200">
-                    </div>
-                    <div class="form-group" style="margin-bottom: 0;">
-                        <label>Variável para Ajuste</label>
-                        <select id="adp_var" class="form-control">
-                            <option value="altura">Altura</option>
-                            <option value="largura">Largura</option>
-                            <option value="comprimento">Comprimento</option>
-                        </select>
-                    </div>
-                    <div class="result-box">
-                        <div class="result-label">Nova Medida</div>
-                        <div class="result-value" id="adp_result">-- cm</div>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -720,10 +718,10 @@
         
         const outDesc = document.getElementById('out_desc');
         const typeAlert = document.getElementById('typeAlert');
+        const outUtilCiclo = document.getElementById('out_util_ciclo');
 
-        const adpTargetCap = document.getElementById('adp_target_cap');
-        const adpVar = document.getElementById('adp_var');
-        const adpResult = document.getElementById('adp_result');
+        const inTestCap = document.getElementById('in_test_cap');
+        const testStatusBadge = document.getElementById('test_status_badge');
 
         // Logic Calculator
         function calculate() {
@@ -952,28 +950,84 @@
             }
 
 
+            // --- UTILIZAÇÃO CICLO ---
+            const ciclo = padrao === 'Multi Way' ? 'Reutilizável' : 'Não Reutilizável';
+            outUtilCiclo.textContent = ciclo;
+
+
             // --- DESCRIÇÃO ---
             outDesc.textContent = descriptions[padrao] || '--';
 
-            calculateAdaptor();
-        }
+            // --- SIMULAÇÃO DE CARGA ---
+            const testCap = parseFloat(inTestCap.value) || 0;
+            const R_test = testCap * factor;
 
-        // Volume Adaptor Calculation
-        function calculateAdaptor() {
-            const cap = parseFloat(document.getElementById('in_cap').value) || 1;
-            const targetCap = parseFloat(adpTargetCap.value) || 0;
-            const varType = adpVar.value; // 'altura', 'largura', 'comprimento'
-            
-            let currentDim = 0;
-            if (varType === 'altura') currentDim = parseFloat(document.getElementById('in_height').value) || 0;
-            else if (varType === 'largura') currentDim = parseFloat(document.getElementById('in_width').value) || 0;
-            else if (varType === 'comprimento') currentDim = parseFloat(document.getElementById('in_length').value) || 0;
-
-            if (cap > 0) {
-                const newDim = (currentDim * targetCap) / cap;
-                adpResult.textContent = `${newDim.toFixed(1)} cm`;
+            // Fabric check for R_test
+            let tecido_req = 0;
+            let lamina_req = 0;
+            if (structure === 'Plano') {
+                if (factor === 5) {
+                    if (R_test <= 5000) { tecido_req = 160; lamina_req = 25; }
+                    else if (R_test <= 6250) { tecido_req = 190; lamina_req = 25; }
+                    else if (R_test <= 7500) { tecido_req = 220; lamina_req = 25; }
+                    else { tecido_req = 220; lamina_req = 35; }
+                } else {
+                    if (R_test <= 6000) { tecido_req = 190; lamina_req = 25; }
+                    else if (R_test <= 7500) { tecido_req = 220; lamina_req = 25; }
+                    else { tecido_req = 220; lamina_req = 35; }
+                }
             } else {
-                adpResult.textContent = '-- cm';
+                if (R_test <= 5000) { tecido_req = 160; lamina_req = 25; }
+                else if (R_test <= 7500) { tecido_req = 190; lamina_req = 25; }
+                else if (R_test <= 8500) { tecido_req = 220; lamina_req = 25; }
+                else { tecido_req = 240; lamina_req = 35; }
+            }
+            const total_gram_req = tecido_req + lamina_req;
+
+            // Loop check for R_test
+            let rawH_test = Math.ceil(R_test / 4);
+            let isDouble_test = false;
+            if (rawH_test > 1800) {
+                rawH_test = Math.ceil((R_test / 2) / 4);
+                isDouble_test = true;
+            }
+            let meets_alca = false;
+            if (rawH_test <= 1800) {
+                const availableAlcas = [1250, 1500, 1800];
+                let alca_req = availableAlcas.find(a => a >= rawH_test) || 1800;
+                
+                if (isDouble && !isDouble_test) {
+                    meets_alca = true;
+                } else if (!isDouble && isDouble_test) {
+                    meets_alca = false;
+                } else {
+                    meets_alca = (finalH >= alca_req);
+                }
+            } else {
+                meets_alca = false;
+            }
+
+            const current_total_gram = tecido + lamina;
+            const meets_fabric = (current_total_gram >= total_gram_req);
+            
+            let meets = false;
+            if (testCap <= cap) {
+                meets = true;
+            } else {
+                meets = meets_fabric && meets_alca;
+            }
+
+            // Update badge UI
+            if (meets) {
+                testStatusBadge.textContent = 'Atende';
+                testStatusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+                testStatusBadge.style.color = '#10b981';
+                testStatusBadge.style.border = '1px solid #10b981';
+            } else {
+                testStatusBadge.textContent = 'Não Atende';
+                testStatusBadge.style.background = 'rgba(239, 68, 68, 0.15)';
+                testStatusBadge.style.color = '#ef4444';
+                testStatusBadge.style.border = '1px solid #ef4444';
             }
         }
 
@@ -982,9 +1036,6 @@
             el.addEventListener('input', calculate);
             el.addEventListener('change', calculate);
         });
-
-        adpTargetCap.addEventListener('input', calculateAdaptor);
-        adpVar.addEventListener('change', calculateAdaptor);
 
         // Initial Calculation
         calculate();
