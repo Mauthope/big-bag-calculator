@@ -750,8 +750,10 @@
 
         function enforceRules() {
             const bagShapeSelect = document.getElementById('in_bag_shape');
-            let bagShape = bagShapeSelect.value;
-            const padrao = document.getElementById('in_padrao').value;
+            const bagShape = bagShapeSelect.value;
+            
+            const padraoSelect = document.getElementById('in_padrao');
+            let padrao = padraoSelect.value;
             
             const structPlano = document.getElementById('struct_plano');
             const structTubular = document.getElementById('struct_tubular');
@@ -759,21 +761,41 @@
             const structLiner = document.getElementById('struct_liner');
             const structNoLiner = document.getElementById('struct_no_liner');
 
-            // 1. Enforce Padrão restrictions on Bag Shape
-            if (padrao === 'Fertilizante') {
-                if (bagShape !== 'Circular') {
-                    bagShapeSelect.value = 'Circular';
-                    bagShape = 'Circular';
-                }
-            } else if (padrao === 'Travado') {
-                const allowedShapes = ['Circular Travado', '8 painéis', '4 painéis'];
-                if (!allowedShapes.includes(bagShape)) {
-                    bagShapeSelect.value = 'Circular Travado';
-                    bagShape = 'Circular Travado';
+            // 1. Ensure all option elements in the Tipo (bag shape) dropdown are always enabled
+            Array.from(bagShapeSelect.options).forEach(opt => {
+                opt.disabled = false;
+            });
+
+            // 2. Enable all Padrão options before applying restrictions
+            Array.from(padraoSelect.options).forEach(opt => {
+                opt.disabled = false;
+            });
+
+            // 3. Restrict Padrão based on the selected Tipo (bagShape)
+            // Fertilizante only allowed if Tipo is Circular
+            if (bagShape !== 'Circular') {
+                Array.from(padraoSelect.options).forEach(opt => {
+                    if (opt.value === 'Fertilizante') opt.disabled = true;
+                });
+                if (padrao === 'Fertilizante') {
+                    padraoSelect.value = 'Multi Way';
+                    padrao = 'Multi Way';
                 }
             }
 
-            // 2. Enforce Bag Shape restrictions on Structure
+            // Travado only allowed if Tipo is Circular Travado, 8 painéis, or 4 painéis
+            const travadoAllowed = ['Circular Travado', '8 painéis', '4 painéis'];
+            if (!travadoAllowed.includes(bagShape)) {
+                Array.from(padraoSelect.options).forEach(opt => {
+                    if (opt.value === 'Travado') opt.disabled = true;
+                });
+                if (padrao === 'Travado') {
+                    padraoSelect.value = 'Multi Way';
+                    padrao = 'Multi Way';
+                }
+            }
+
+            // 4. Enforce Bag Shape restrictions on Structure
             // Circular and Gota must be Tubular only
             const isTubularOnly = ['Circular', 'Gota'].includes(bagShape);
             // 4 painéis, 8 painéis, Corpo U and Sling must be Plano only
@@ -793,30 +815,7 @@
                 structTubular.disabled = false;
             }
 
-            // 3. Enable/Disable Bag Shape dropdown options based on Padrão and Structure
-            const currentStructure = document.querySelector('input[name="structure"]:checked')?.value || 'Plano';
-            
-            Array.from(bagShapeSelect.options).forEach(opt => {
-                let disabled = false;
-
-                // A. Padrão limits
-                if (padrao === 'Fertilizante' && opt.value !== 'Circular') {
-                    disabled = true;
-                } else if (padrao === 'Travado' && !['Circular Travado', '8 painéis', '4 painéis'].includes(opt.value)) {
-                    disabled = true;
-                }
-
-                // B. Structure limits
-                if (currentStructure === 'Tubular' && ['4 painéis', '8 painéis', 'Corpou', 'Sling'].includes(opt.value)) {
-                    disabled = true;
-                } else if (currentStructure === 'Plano' && ['Circular', 'Gota'].includes(opt.value)) {
-                    disabled = true;
-                }
-
-                opt.disabled = disabled;
-            });
-
-            // 4. Enforce Liner restrictions
+            // 5. Enforce Liner restrictions based on Tipo and Padrão
             // Sling must be Sem Liner only
             // Travado pattern or Circular Travado shape cannot have liner
             const isLinerBlocked = (padrao === 'Travado' || bagShape === 'Circular Travado' || bagShape === 'Sling');
