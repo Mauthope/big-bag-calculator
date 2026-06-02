@@ -871,8 +871,8 @@
             });
 
             // 4. Enforce Bag Shape restrictions on Structure
-            // Circular and Gota must be Tubular only
-            const isTubularOnly = ['Circular', 'Gota'].includes(bagShape);
+            // Circular, Gota and Circular Travado must be Tubular only
+            const isTubularOnly = ['Circular', 'Gota', 'Circular Travado'].includes(bagShape);
             // 4 painéis, 8 painéis, Corpo U and Sling must be Plano only
             const isPlanoOnly = ['4 painéis', '8 painéis', '4 painéis travado', '8 painéis travado', 'Corpou', 'Sling'].includes(bagShape);
 
@@ -885,7 +885,6 @@
                 structPlano.disabled = false;
                 structPlano.checked = true;
             } else {
-                // Circular Travado can be either Plano or Tubular
                 structPlano.disabled = false;
                 structTubular.disabled = false;
             }
