@@ -408,12 +408,18 @@
             </div>
 
             <div class="form-group">
-                <label>Padrão</label>
+                <label>Utilização</label>
                 <select id="in_padrao" class="form-control">
-                    <option value="Multi Way">Multi Way</option>
-                    <option value="One Way">One Way</option>
-                    <option value="Fertilizante">Fertilizante</option>
-                    <option value="Travado">Travado</option>
+                    <option value="Reutilizável">Reutilizável</option>
+                    <option value="Não reutilizável">Não reutilizável</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Acabamento do Tecido</label>
+                <select id="in_acabamento" class="form-control">
+                    <option value="Laminado">Laminado</option>
+                    <option value="Convencional">Convencional</option>
                 </select>
             </div>
 
@@ -509,6 +515,43 @@
                         </select>
                     </div>
                 </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Comprimento (cm)</label>
+                        <input type="number" id="in_valve_length" class="form-control" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Costura da Válvula</label>
+                        <select id="in_valve_costura" class="form-control">
+                            <option value="dobra int/ext" selected>Dobra int/ext</option>
+                            <option value="à fio">À fio</option>
+                            <option value="encapada">Encapada</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configuração do Topo e Fundo (Costura) -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
+                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Costuras e Fechamentos</label>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Costura Topo</label>
+                        <select id="in_costura_topo" class="form-control">
+                            <option value="à fio">À fio</option>
+                            <option value="envelope" selected>Envelope</option>
+                            <option value="dobra ext">Dobra ext</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Costura Fundo</label>
+                        <select id="in_costura_fundo" class="form-control">
+                            <option value="à fio">À fio</option>
+                            <option value="envelope" selected>Envelope</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- Teste de Carga / Simulação -->
@@ -554,15 +597,15 @@
                         <div class="card-badge" id="out_r_badge">R: --</div>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Corte Altura</span>
+                        <span class="data-label">Altura</span>
                         <span class="data-value" id="out_body_h">-- cm</span>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Corte Largura</span>
+                        <span class="data-label">Largura</span>
                         <span class="data-value" id="out_body_w">-- cm</span>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Corte Compr.</span>
+                        <span class="data-label">Compr.</span>
                         <span class="data-value" id="out_body_l">-- cm</span>
                     </div>
                     
@@ -592,7 +635,7 @@
                         Estrutura do fundo dimensionada conforme o modelo selecionado. A base segue o formato padrão da configuração do corpo.
                     </div>
                     <div class="data-row" style="margin-top: 1rem;">
-                        <span class="data-label">Medida Mín. (L x C)</span>
+                        <span class="data-label">Dimensão de Corte (L x C)</span>
                         <span class="data-value" id="out_fundo_dim">-- cm</span>
                     </div>
                 </div>
@@ -624,8 +667,8 @@
                         <span class="data-value" id="out_topo_res">-- kgf</span>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Fixação (L)</span>
-                        <span class="data-value" id="out_topo_fix">-- cm</span>
+                        <span class="data-label">Dimensão de Corte (L x C)</span>
+                        <span class="data-value" id="out_topo_dim">-- cm</span>
                     </div>
                 </div>
 
@@ -638,26 +681,6 @@
                     <div class="data-row">
                         <span class="data-label">Comprimento da Trava</span>
                         <span class="data-value" id="out_trava_val">-- cm</span>
-                    </div>
-                </div>
-
-                <!-- Utilização Card -->
-                <div class="output-card panel">
-                    <div class="card-header">
-                        <div class="card-title">Utilização</div>
-                        <div class="card-badge" id="out_util_badge">Simples</div>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Carga Trabalho</span>
-                        <span class="data-value" id="out_util_res">-- kg</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Fator Seg.</span>
-                        <span class="data-value" id="out_util_fix">--</span>
-                    </div>
-                    <div class="data-row">
-                        <span class="data-label">Ciclo de Uso</span>
-                        <span class="data-value" id="out_util_ciclo">--</span>
                     </div>
                 </div>
 
@@ -722,6 +745,9 @@
                     <div class="card-header" style="border-bottom: 1px solid var(--border);">
                         <div class="card-title">Válvulas</div>
                         <div class="card-badge" id="out_valve_badge">Tubular</div>
+                    </div>
+                    <div id="out_valve_highlight" style="margin-top: 1rem; padding: 0.75rem; background: rgba(6, 182, 212, 0.1); border: 1px dashed var(--accent); border-radius: 8px; text-align: center; font-weight: 700; color: #fff; font-size: 1.1rem; display: none;">
+                        --
                     </div>
                     <div id="out_valve_data" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
                         <!-- Dynamic data rows injected here -->
@@ -818,7 +844,6 @@
         
         const outDesc = document.getElementById('out_desc');
         const typeAlert = document.getElementById('typeAlert');
-        const outUtilCiclo = document.getElementById('out_util_ciclo');
 
         const inTestCap = document.getElementById('in_test_cap');
         const testStatusBadge = document.getElementById('test_status_badge');
@@ -827,16 +852,23 @@
 
         const inValveStructure = document.getElementById('in_valve_structure');
         const inValveDiameter = document.getElementById('in_valve_diameter');
+        const inValveLength = document.getElementById('in_valve_length');
+        const inValveCostura = document.getElementById('in_valve_costura');
+        
+        const inCosturaTopo = document.getElementById('in_costura_topo');
+        const inCosturaFundo = document.getElementById('in_costura_fundo');
+        const inAcabamento = document.getElementById('in_acabamento');
+        
         const outValveBadge = document.getElementById('out_valve_badge');
+        const outValveHighlight = document.getElementById('out_valve_highlight');
         const outValveData = document.getElementById('out_valve_data');
         const valveCardContainer = document.getElementById('valve_card_container');
+
+        const outTopoDim = document.getElementById('out_topo_dim');
 
         function enforceRules() {
             const bagShapeSelect = document.getElementById('in_bag_shape');
             const bagShape = bagShapeSelect.value;
-            
-            const padraoSelect = document.getElementById('in_padrao');
-            let padrao = padraoSelect.value;
             
             const structPlano = document.getElementById('struct_plano');
             const structTubular = document.getElementById('struct_tubular');
@@ -848,35 +880,6 @@
             Array.from(bagShapeSelect.options).forEach(opt => {
                 opt.disabled = false;
             });
-
-            // 2. Enable all Padrão options before applying restrictions
-            Array.from(padraoSelect.options).forEach(opt => {
-                opt.disabled = false;
-            });
-
-            // 3. Restrict Padrão based on the selected Tipo (bagShape)
-            // Fertilizante only allowed if Tipo is Circular
-            if (bagShape !== 'Circular') {
-                Array.from(padraoSelect.options).forEach(opt => {
-                    if (opt.value === 'Fertilizante') opt.disabled = true;
-                });
-                if (padrao === 'Fertilizante') {
-                    padraoSelect.value = 'Multi Way';
-                    padrao = 'Multi Way';
-                }
-            }
-
-            // Travado only allowed if Tipo is Circular Travado, 8 painéis, or 4 painéis
-            const travadoAllowed = ['Circular Travado', '8 painéis', '4 painéis'];
-            if (!travadoAllowed.includes(bagShape)) {
-                Array.from(padraoSelect.options).forEach(opt => {
-                    if (opt.value === 'Travado') opt.disabled = true;
-                });
-                if (padrao === 'Travado') {
-                    padraoSelect.value = 'Multi Way';
-                    padrao = 'Multi Way';
-                }
-            }
 
             // 4. Enforce Bag Shape restrictions on Structure
             // Circular and Gota must be Tubular only
@@ -898,10 +901,9 @@
                 structTubular.disabled = false;
             }
 
-            // 5. Enforce Liner restrictions based on Tipo and Padrão
-            // Sling must be Sem Liner only
-            // Travado pattern or Circular Travado shape cannot have liner
-            const isLinerBlocked = (padrao === 'Travado' || bagShape === 'Circular Travado' || bagShape === 'Sling');
+            // 5. Enforce Liner restrictions based on Tipo
+            // Sling or Circular Travado cannot have liner
+            const isLinerBlocked = (bagShape === 'Circular Travado' || bagShape === 'Sling');
             if (isLinerBlocked) {
                 structLiner.disabled = true;
                 if (structLiner.checked) {
@@ -946,6 +948,10 @@
             const material = document.getElementById('in_material').value;
             const liner = document.querySelector('input[name="liner"]:checked').value;
             const padrao = document.getElementById('in_padrao').value;
+            const acabamento = document.getElementById('in_acabamento').value;
+            const costuraTopoInput = document.getElementById('in_costura_topo').value;
+            const costuraFundoInput = document.getElementById('in_costura_fundo').value;
+            
             const structure = document.querySelector('input[name="structure"]:checked').value;
             
             const w = parseFloat(document.getElementById('in_width').value) || 0;
@@ -966,24 +972,23 @@
             outRBadge.textContent = `R: ${R}`;
 
             // --- CORPO CALCULATION ---
-            let bodyH = h, bodyW = w, bodyL = l;
-            
-            // Adjust dimension addition based on Padrão select
-            if (padrao === 'One Way' || padrao === 'Travado' || padrao === 'Multi Way') {
-                bodyH += 12;
-                bodyW += 10;
-                bodyL += 10;
-            } else if (padrao === 'Fertilizante') {
-                bodyH += 6;
-                bodyW += 6;
-                bodyL += 6;
-            }
+            let bodyH = h + 12;
+            let bodyW = w + 10;
+            let bodyL = l + 10;
 
             outBodyH.textContent = `${bodyH.toFixed(1)} cm`;
             outBodyW.textContent = `${bodyW.toFixed(1)} cm`;
             outBodyL.textContent = `${bodyL.toFixed(1)} cm`;
             
-            outFundoDim.textContent = `${bodyW.toFixed(1)} x ${bodyL.toFixed(1)} cm`;
+            // --- FUNDO CALCULATION ---
+            let fundoW = w;
+            let fundoL = l;
+            if (costuraFundoInput === 'à fio') {
+                fundoW += 6; fundoL += 6;
+            } else if (costuraFundoInput === 'envelope') {
+                fundoW += 12; fundoL += 12;
+            }
+            outFundoDim.textContent = `${fundoW.toFixed(1)} x ${fundoL.toFixed(1)} cm`;
 
             // Fabric & Lamination
             let tecido = 0;
@@ -1007,6 +1012,10 @@
                 else if (R <= 7500) { tecido = 190; lamina = 25; }
                 else if (R <= 8500) { tecido = 220; lamina = 25; }
                 else { tecido = 240; lamina = 35; }
+            }
+            
+            if (acabamento === 'Convencional') {
+                lamina = 0;
             }
 
             outTecido.textContent = `${tecido} g`;
@@ -1057,30 +1066,25 @@
             }
             const topoRes = R <= 5000 ? 600 : (R <= 7500 ? 800 : 1000);
             outTopoRes.textContent = `${topoRes} kgf`;
-            outTopoFix.textContent = '50 cm';
-
+            
+            let topoW = w;
+            let topoL = l;
+            if (costuraTopoInput === 'à fio') {
+                topoW += 8; topoL += 8;
+            } else if (costuraTopoInput === 'envelope') {
+                topoW += 12; topoL += 12;
+            } else if (costuraTopoInput === 'dobra ext') {
+                topoW += 10; topoL += 10;
+            }
+            outTopoDim.textContent = `${topoW.toFixed(1)} x ${topoL.toFixed(1)} cm`;
 
             // --- TRAVA CALCULATION ---
-            if (padrao === 'Travado') {
+            if (bagShape === 'Circular Travado' || bagShape === '4 painéis' || bagShape === '8 painéis') {
                 travaCard.style.display = 'block';
                 outTravaVal.textContent = `${h + 10} cm`;
             } else {
                 travaCard.style.display = 'none';
             }
-
-
-            // --- UTILIZAÇÃO CALCULATION ---
-            const isFoodGrade = ['Farinha', 'Acucar', 'Graos', 'Sementes'].includes(material);
-            if (isFoodGrade) {
-                outUtilBadge.textContent = 'Alimentício';
-                outUtilBadge.className = 'card-badge warning'; // gold/warning for premium look
-            } else {
-                outUtilBadge.textContent = 'Industrial';
-                outUtilBadge.className = 'card-badge';
-            }
-            outUtilRes.textContent = `${cap} kg`;
-            outUtilFix.textContent = `${factor}:1`;
-
 
             // --- COSTURA CALCULATION ---
             let costuraTopo = '';
@@ -1091,30 +1095,19 @@
             const isMediumPowder = ['Acucar', 'Fertilizante'].includes(material);
 
             // Costura Topo & Fundo logic
-            if (padrao === 'Fertilizante') {
-                costuraTopo = 'Dobra Simples';
-                costuraFundo = 'Dobra Interna + Fio Externo';
+            if (isFinePowder) {
+                costuraTopo = 'Dobra Interna + Feltro e Cordão (Vedação Dupla)';
+                costuraFundo = 'Dobra Externa + Feltro e Cordão (Vedação Dupla)';
+            } else if (isMediumPowder) {
+                costuraTopo = 'Dobra Interna + Cordão (Vedação Simples)';
+                costuraFundo = 'Dobra Externa + Cordão (Vedação Simples)';
             } else {
-                if (isFinePowder) {
-                    costuraTopo = 'Dobra Interna + Feltro e Cordão (Vedação Dupla)';
-                    costuraFundo = 'Dobra Externa + Feltro e Cordão (Vedação Dupla)';
-                } else if (isMediumPowder) {
-                    costuraTopo = 'Dobra Interna + Cordão (Vedação Simples)';
-                    costuraFundo = 'Dobra Externa + Cordão (Vedação Simples)';
-                } else {
-                    costuraTopo = 'Dobra Interna';
-                    costuraFundo = 'Dobra Externa';
-                }
+                costuraTopo = 'Dobra Interna';
+                costuraFundo = 'Dobra Externa';
             }
 
             // Costura Acessório logic
-            if (padrao === 'Fertilizante') {
-                costuraAcessorio = 'Costura Externa (Alças)';
-            } else if (padrao === 'Travado') {
-                costuraAcessorio = 'Costura Interna + Fixação de Travas (Fio Amarelo)';
-            } else {
-                costuraAcessorio = 'Costura Interna (Alças)';
-            }
+            costuraAcessorio = 'Costura Interna (Alças)';
 
             // Update DOM
             outCosturaTopo.textContent = costuraTopo;
@@ -1174,13 +1167,14 @@
             }
 
 
-            // --- UTILIZAÇÃO CICLO ---
-            const ciclo = padrao === 'Multi Way' ? 'Reutilizável' : 'Não Reutilizável';
-            outUtilCiclo.textContent = ciclo;
-
-
             // --- DESCRIÇÃO ---
-            outDesc.textContent = descriptions[padrao] || '--';
+            let desc = "";
+            if (padrao === 'Reutilizável') {
+                desc = descriptions["Multi Way"];
+            } else {
+                desc = descriptions["One Way"];
+            }
+            outDesc.textContent = desc || '--';
 
             // --- SIMULAÇÃO DE CARGA ---
             const testCap = parseFloat(inTestCap.value) || 0;
@@ -1285,6 +1279,18 @@
             outValveData.innerHTML = '';
             
             if (valveDataObj) {
+                // Calculate Corte Comprimento da válvula
+                let vLength = parseFloat(inValveLength.value) || 0;
+                let costuraV = inValveCostura.value;
+                if (costuraV === 'dobra int/ext') vLength += 5;
+                else if (costuraV === 'à fio') vLength += 3;
+                else if (costuraV === 'encapada') vLength += 12;
+
+                const tecidoLargura = valveDataObj['Largura TECIDO'] || valveDataObj['Largura útil da Válvula'] || '';
+                
+                outValveHighlight.style.display = 'block';
+                outValveHighlight.textContent = `Tecido ${tecidoLargura} x ${vLength} cm`;
+
                 for (const [key, val] of Object.entries(valveDataObj)) {
                     const row = document.createElement('div');
                     row.className = 'data-row';
@@ -1307,6 +1313,7 @@
                     outValveData.appendChild(row);
                 }
             } else {
+                outValveHighlight.style.display = 'none';
                 outValveData.innerHTML = '<div style="color:var(--text-muted); font-size: 0.9rem; text-align: center; grid-column: 1/-1;">Dados não encontrados.</div>';
             }
         }
