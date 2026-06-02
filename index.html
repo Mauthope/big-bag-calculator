@@ -533,28 +533,7 @@
                 </div>
             </div>
 
-            <!-- Configuração do Topo e Fundo (Costura) -->
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
-                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Costuras e Fechamentos</label>
-                
-                <div class="grid-2">
-                    <div class="form-group">
-                        <label>Costura Topo</label>
-                        <select id="in_costura_topo" class="form-control">
-                            <option value="à fio">À fio</option>
-                            <option value="envelope" selected>Envelope</option>
-                            <option value="dobra ext">Dobra ext</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Costura Fundo</label>
-                        <select id="in_costura_fundo" class="form-control">
-                            <option value="à fio">À fio</option>
-                            <option value="envelope" selected>Envelope</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Teste de Carga / Simulação -->
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
@@ -633,8 +612,12 @@
                         <div class="card-title">Fundo</div>
                         <div class="card-badge" style="background: rgba(255,255,255,0.1); color:#fff">Padrão</div>
                     </div>
-                    <div class="data-row" style="color: var(--text-muted); font-size: 0.9rem;">
-                        Estrutura do fundo dimensionada conforme o modelo selecionado. A base segue o formato padrão da configuração do corpo.
+                    <div class="form-group" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                        <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Costura Fundo</label>
+                        <select id="in_costura_fundo" class="form-control" style="padding: 0.5rem 2.5rem 0.5rem 0.75rem; font-size: 0.9rem; height: auto; background-position: right 0.75rem center;">
+                            <option value="à fio">À fio</option>
+                            <option value="envelope" selected>Envelope</option>
+                        </select>
                     </div>
                     <div class="data-row" style="margin-top: 1rem;">
                         <span class="data-label">Dimensão de Corte (L x C)</span>
@@ -663,6 +646,14 @@
                     <div class="card-header">
                         <div class="card-title">Topo</div>
                         <div class="card-badge" id="out_topo_badge">Simples</div>
+                    </div>
+                    <div class="form-group" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                        <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Costura Topo</label>
+                        <select id="in_costura_topo" class="form-control" style="padding: 0.5rem 2.5rem 0.5rem 0.75rem; font-size: 0.9rem; height: auto; background-position: right 0.75rem center;">
+                            <option value="à fio">À fio</option>
+                            <option value="envelope" selected>Envelope</option>
+                            <option value="dobra ext">Dobra ext</option>
+                        </select>
                     </div>
                     <div class="data-row">
                         <span class="data-label">Resistência (H)</span>
