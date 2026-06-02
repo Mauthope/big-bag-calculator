@@ -656,10 +656,6 @@
                         </select>
                     </div>
                     <div class="data-row">
-                        <span class="data-label">Resistência (H)</span>
-                        <span class="data-value" id="out_topo_res">-- kgf</span>
-                    </div>
-                    <div class="data-row">
                         <span class="data-label">Dimensão de Corte (L x C)</span>
                         <span class="data-value" id="out_topo_dim">-- cm</span>
                     </div>
@@ -1062,7 +1058,7 @@
                 outTopoBadge.className = 'card-badge';
             }
             const topoRes = R <= 5000 ? 600 : (R <= 7500 ? 800 : 1000);
-            outTopoRes.textContent = `${topoRes} kgf`;
+            if (outTopoRes) outTopoRes.textContent = `${topoRes} kgf`;
             
             let topoW = w;
             let topoL = l;
