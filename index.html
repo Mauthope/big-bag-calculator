@@ -413,6 +413,8 @@
                 <label>Utilização</label>
                 <select id="in_padrao" class="form-control">
                     <option value="Reutilizável">Reutilizável</option>
+                    <option value="Reutilizável atenuado">Reutilizável atenuado</option>
+                    <option value="Reutilizável reforçado">Reutilizável reforçado</option>
                     <option value="Não reutilizável">Não reutilizável</option>
                 </select>
             </div>
@@ -422,6 +424,14 @@
                 <select id="in_acabamento" class="form-control">
                     <option value="Laminado">Laminado</option>
                     <option value="Convencional">Convencional</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Porta Documentos</label>
+                <select id="in_porta_documentos" class="form-control">
+                    <option value="com imp" selected>Com imp</option>
+                    <option value="sem imp">Sem imp</option>
                 </select>
             </div>
 
@@ -530,6 +540,13 @@
                             <option value="encapada">Encapada</option>
                         </select>
                     </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Lacre</label>
+                    <select id="in_valve_lacre" class="form-control">
+                        <option value="não" selected>Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
                 </div>
             </div>
 
@@ -647,13 +664,32 @@
                         <div class="card-title">Topo</div>
                         <div class="card-badge" id="out_topo_badge">Simples</div>
                     </div>
-                    <div class="form-group" style="margin-top: 0.5rem; margin-bottom: 0.75rem;">
+                    <div class="form-group" style="margin-top: 0.5rem; margin-bottom: 0.5rem;">
                         <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Costura Topo</label>
                         <select id="in_costura_topo" class="form-control" style="padding: 0.5rem 2.5rem 0.5rem 0.75rem; font-size: 0.9rem; height: auto; background-position: right 0.75rem center;">
                             <option value="à fio">À fio</option>
                             <option value="envelope" selected>Envelope</option>
                             <option value="dobra ext">Dobra ext</option>
                         </select>
+                    </div>
+                    <div class="grid-2" style="margin-bottom: 0.5rem;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Prega</label>
+                            <select id="in_topo_prega" class="form-control" style="padding: 0.5rem 2.5rem 0.5rem 0.75rem; font-size: 0.9rem; height: auto; background-position: right 0.75rem center;">
+                                <option value="Não" selected>Não</option>
+                                <option value="Sim">Sim</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="group_topo_prega_pos" style="margin-bottom: 0; display: none;">
+                            <label style="font-size: 0.8rem; margin-bottom: 0.25rem;">Posição Prega</label>
+                            <select id="in_topo_prega_pos" class="form-control" style="padding: 0.5rem 2.5rem 0.5rem 0.75rem; font-size: 0.9rem; height: auto; background-position: right 0.75rem center;">
+                                <option value="no meio" selected>no meio</option>
+                                <option value="no canto">no canto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="topo_prega_warning" style="color: #ef4444; font-weight: 600; font-size: 0.85rem; margin-bottom: 0.75rem; display: none;">
+                        ⚠️ Rever Calculo
                     </div>
                     <div class="data-row">
                         <span class="data-label">Dimensão de Corte (L x C)</span>
@@ -1070,6 +1106,18 @@
             }
             outTopoDim.textContent = `${topoW.toFixed(1)} x ${topoL.toFixed(1)} cm`;
 
+            // Topo Prega Logic
+            const prega = document.getElementById('in_topo_prega').value;
+            const groupPregaPos = document.getElementById('group_topo_prega_pos');
+            const pregaWarning = document.getElementById('topo_prega_warning');
+            if (prega === 'Sim') {
+                if (groupPregaPos) groupPregaPos.style.display = 'block';
+                if (pregaWarning) pregaWarning.style.display = 'block';
+            } else {
+                if (groupPregaPos) groupPregaPos.style.display = 'none';
+                if (pregaWarning) pregaWarning.style.display = 'none';
+            }
+
             // --- TRAVA CALCULATION ---
             if (bagShape === 'Circular Travado' || bagShape === '4 painéis' || bagShape === '8 painéis' || bagShape === '4 painéis travado' || bagShape === '8 painéis travado') {
                 travaCard.style.display = 'block';
@@ -1161,10 +1209,20 @@
 
             // --- DESCRIÇÃO ---
             let desc = "";
-            if (padrao === 'Reutilizável') {
+            if (padrao.toLowerCase().includes('reutilizável')) {
                 desc = descriptions["Multi Way"];
             } else {
                 desc = descriptions["One Way"];
+            }
+
+            // --- PORTA DOCUMENTOS REPLACEMENT IN DESCRIPTION ---
+            const portaDoc = document.getElementById('in_porta_documentos').value;
+            if (portaDoc === 'sem imp') {
+                desc = desc.replace("PORTA DOCUMENTO IMPRESO", "PORTA DOCUMENTO SEM IMPRESSÃO");
+                desc = desc.replace("PORTA DOCUMENTO + ETIQUETA", "PORTA DOCUMENTO SEM IMPRESSÃO + ETIQUETA");
+            } else {
+                desc = desc.replace("PORTA DOCUMENTO IMPRESO", "PORTA DOCUMENTO IMPRESSO");
+                desc = desc.replace("PORTA DOCUMENTO + ETIQUETA", "PORTA DOCUMENTO COM IMPRESSÃO + ETIQUETA");
             }
             outDesc.textContent = desc || '--';
 
@@ -1304,6 +1362,29 @@
                     row.appendChild(value);
                     outValveData.appendChild(row);
                 }
+
+                // Append Lacre row
+                const lacreVal = document.getElementById('in_valve_lacre').value;
+                const lacreRow = document.createElement('div');
+                lacreRow.className = 'data-row';
+                lacreRow.style.background = 'rgba(6, 182, 212, 0.05)';
+                lacreRow.style.padding = '0.5rem';
+                lacreRow.style.borderRadius = '6px';
+                lacreRow.style.border = '1px dashed rgba(6, 182, 212, 0.2)';
+                
+                const lacreLabel = document.createElement('span');
+                lacreLabel.className = 'data-label';
+                lacreLabel.style.fontSize = '0.85rem';
+                lacreLabel.textContent = 'Lacre';
+                
+                const lacreValue = document.createElement('span');
+                lacreValue.className = 'data-value';
+                lacreValue.style.fontSize = '0.9rem';
+                lacreValue.textContent = lacreVal.charAt(0).toUpperCase() + lacreVal.slice(1);
+                
+                lacreRow.appendChild(lacreLabel);
+                lacreRow.appendChild(lacreValue);
+                outValveData.appendChild(lacreRow);
             } else {
                 outValveHighlight.style.display = 'none';
                 outValveData.innerHTML = '<div style="color:var(--text-muted); font-size: 0.9rem; text-align: center; grid-column: 1/-1;">Dados não encontrados.</div>';
