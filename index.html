@@ -500,9 +500,9 @@
                 </div>
             </div>
 
-            <!-- Configuração da Válvula -->
-            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
-                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Configuração da Válvula</label>
+            <!-- Configuração da Válvula (Descarga) -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);" id="section_valve_descarga">
+                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Configuração da Válvula (Descarga)</label>
                 
                 <div class="grid-2">
                     <div class="form-group">
@@ -544,6 +544,56 @@
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Lacre</label>
                     <select id="in_valve_lacre" class="form-control">
+                        <option value="não" selected>Não</option>
+                        <option value="sim">Sim</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Configuração da Válvula (Enchimento) -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); display: none;" id="section_valve_enchimento">
+                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Configuração da Válvula (Enchimento)</label>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Estrutura da Válvula</label>
+                        <select id="in_valve_ench_structure" class="form-control">
+                            <option value="Tubular" selected>Tubular</option>
+                            <option value="Plano">Plano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Diâmetro (cm)</label>
+                        <select id="in_valve_ench_diameter" class="form-control">
+                            <option value="20">20</option>
+                            <option value="30" selected>30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                            <option value="55">55</option>
+                            <option value="60">60</option>
+                            <option value="70">70</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Comprimento (cm)</label>
+                        <input type="number" id="in_valve_ench_length" class="form-control" value="50">
+                    </div>
+                    <div class="form-group">
+                        <label>Costura da Válvula</label>
+                        <select id="in_valve_ench_costura" class="form-control">
+                            <option value="dobra int/ext" selected>Dobra int/ext</option>
+                            <option value="à fio">À fio</option>
+                            <option value="encapada">Encapada</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Lacre</label>
+                    <select id="in_valve_ench_lacre" class="form-control">
                         <option value="não" selected>Não</option>
                         <option value="sim">Sim</option>
                     </select>
@@ -879,6 +929,13 @@
         const inValveDiameter = document.getElementById('in_valve_diameter');
         const inValveLength = document.getElementById('in_valve_length');
         const inValveCostura = document.getElementById('in_valve_costura');
+        const inValveLacre = document.getElementById('in_valve_lacre');
+
+        const inValveEnchStructure = document.getElementById('in_valve_ench_structure');
+        const inValveEnchDiameter = document.getElementById('in_valve_ench_diameter');
+        const inValveEnchLength = document.getElementById('in_valve_ench_length');
+        const inValveEnchCostura = document.getElementById('in_valve_ench_costura');
+        const inValveEnchLacre = document.getElementById('in_valve_ench_lacre');
         
         const inCosturaTopo = document.getElementById('in_costura_topo');
         const inCosturaFundo = document.getElementById('in_costura_fundo');
@@ -938,27 +995,51 @@
             }
 
             // 6. Enforce Valve constraints dynamically
+            const type = document.getElementById('in_type').value;
+            const material = document.getElementById('in_material').value;
+
+            // Toggle visibility of Válvula de Enchimento inputs based on Model=C6 and Material=Fertilizante
+            const sectionValveEnch = document.getElementById('section_valve_enchimento');
+            if (type === 'C6' && material === 'Fertilizante') {
+                if (sectionValveEnch) sectionValveEnch.style.display = 'block';
+            } else {
+                if (sectionValveEnch) sectionValveEnch.style.display = 'none';
+            }
+
+            // Discharge Valve
             const valveStructure = inValveStructure.value;
             let currentValveDiam = inValveDiameter.value;
-            
-            // Adjust options
             Array.from(inValveDiameter.options).forEach(opt => {
                 if (valveStructure === 'Tubular') {
-                    // Tubular has 20, but not 70
                     if (opt.value === '70') opt.disabled = true;
                     else opt.disabled = false;
                 } else if (valveStructure === 'Plano') {
-                    // Plano has 70, but not 20
                     if (opt.value === '20') opt.disabled = true;
                     else opt.disabled = false;
                 }
             });
-
-            // Adjust selected if it falls on a disabled option
             if (valveStructure === 'Tubular' && currentValveDiam === '70') {
                 inValveDiameter.value = '60';
             } else if (valveStructure === 'Plano' && currentValveDiam === '20') {
                 inValveDiameter.value = '30';
+            }
+
+            // Filling Valve
+            const valveEnchStructure = inValveEnchStructure.value;
+            let currentValveEnchDiam = inValveEnchDiameter.value;
+            Array.from(inValveEnchDiameter.options).forEach(opt => {
+                if (valveEnchStructure === 'Tubular') {
+                    if (opt.value === '70') opt.disabled = true;
+                    else opt.disabled = false;
+                } else if (valveEnchStructure === 'Plano') {
+                    if (opt.value === '20') opt.disabled = true;
+                    else opt.disabled = false;
+                }
+            });
+            if (valveEnchStructure === 'Tubular' && currentValveEnchDiam === '70') {
+                inValveEnchDiameter.value = '60';
+            } else if (valveEnchStructure === 'Plano' && currentValveEnchDiam === '20') {
+                inValveEnchDiameter.value = '30';
             }
         }
 
@@ -984,8 +1065,12 @@
             const cap = parseFloat(document.getElementById('in_cap').value) || 0;
             const factor = parseFloat(document.getElementById('in_factor').value) || 5;
 
-            // Handle Type C1 restriction
-            if(type !== 'C1') {
+            // Handle Model C1 and C6 restrictions
+            if (type === 'C6' && material !== 'Fertilizante') {
+                typeAlert.textContent = "Atenção: Para o Modelo C6, apenas o Material Fertilizante está implementado.";
+                typeAlert.style.display = 'block';
+            } else if (type !== 'C1' && type !== 'C6') {
+                typeAlert.textContent = "Atenção: Apenas os Modelos C1 e C6 (Fertilizante) estão implementados nesta versão.";
                 typeAlert.style.display = 'block';
             } else {
                 typeAlert.style.display = 'none';
@@ -1316,78 +1401,104 @@
             const vStructure = inValveStructure.value;
             const vDiam = inValveDiameter.value;
 
-            outValveBadge.textContent = vStructure;
-            if (vStructure === 'Tubular') {
-                outValveBadge.className = 'card-badge';
-            } else {
-                outValveBadge.className = 'card-badge warning';
-            }
-
-            const valveDataObj = vStructure === 'Tubular' ? valveTubularData[vDiam] : valvePlanoData[vDiam];
-
             // Clear previous data
             outValveData.innerHTML = '';
-            
-            if (valveDataObj) {
-                // Calculate Corte Comprimento da válvula
-                let vLength = parseFloat(inValveLength.value) || 0;
-                let costuraV = inValveCostura.value;
-                if (costuraV === 'dobra int/ext') vLength += 5;
-                else if (costuraV === 'à fio') vLength += 3;
-                else if (costuraV === 'encapada') vLength += 12;
+
+            // Helper function to build valve details HTML
+            function getValveDetailsHTML(title, structureVal, diameterVal, lengthVal, costuraVal, lacreVal) {
+                const valveDataObj = structureVal === 'Tubular' ? valveTubularData[diameterVal] : valvePlanoData[diameterVal];
+                
+                if (!valveDataObj) {
+                    return `<div style="color:var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem; text-align: center;">Dados da Válvula (${title}) não encontrados para diâmetro ${diameterVal} cm.</div>`;
+                }
+
+                let vLength = parseFloat(lengthVal) || 0;
+                if (costuraVal === 'dobra int/ext') vLength += 5;
+                else if (costuraVal === 'à fio') vLength += 3;
+                else if (costuraVal === 'encapada') vLength += 12;
 
                 const tecidoLargura = valveDataObj['Largura TECIDO'] || valveDataObj['Largura útil da Válvula'] || '';
                 
-                outValveHighlight.style.display = 'block';
-                outValveHighlight.textContent = `Tecido ${tecidoLargura} x ${vLength} cm`;
+                let html = `
+                    <div style="background: rgba(15, 23, 42, 0.4); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 0.5rem;">
+                        <h4 style="color: var(--accent); margin-bottom: 0.75rem; font-size: 0.95rem; border-bottom: 1px solid rgba(6, 182, 212, 0.2); padding-bottom: 0.25rem;">${title} (${structureVal})</h4>
+                        
+                        <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: rgba(6, 182, 212, 0.1); border: 1px dashed var(--accent); border-radius: 6px; text-align: center; font-weight: 700; color: #fff; font-size: 1rem;">
+                            Tecido ${tecidoLargura} x ${vLength} cm
+                        </div>
+                `;
 
                 for (const [key, val] of Object.entries(valveDataObj)) {
-                    const row = document.createElement('div');
-                    row.className = 'data-row';
-                    row.style.background = 'rgba(0,0,0,0.1)';
-                    row.style.padding = '0.5rem';
-                    row.style.borderRadius = '6px';
-                    
-                    const label = document.createElement('span');
-                    label.className = 'data-label';
-                    label.style.fontSize = '0.85rem';
-                    label.textContent = key;
-                    
-                    const value = document.createElement('span');
-                    value.className = 'data-value';
-                    value.style.fontSize = '0.9rem';
-                    value.textContent = val;
-                    
-                    row.appendChild(label);
-                    row.appendChild(value);
-                    outValveData.appendChild(row);
+                    html += `
+                        <div class="data-row" style="background: rgba(0,0,0,0.1); padding: 0.4rem 0.5rem; border-radius: 6px; margin-bottom: 0.35rem;">
+                            <span class="data-label" style="font-size: 0.85rem;">${key}</span>
+                            <span class="data-value" style="font-size: 0.85rem;">${val}</span>
+                        </div>
+                    `;
                 }
 
-                // Append Lacre row
-                const lacreVal = document.getElementById('in_valve_lacre').value;
-                const lacreRow = document.createElement('div');
-                lacreRow.className = 'data-row';
-                lacreRow.style.background = 'rgba(6, 182, 212, 0.05)';
-                lacreRow.style.padding = '0.5rem';
-                lacreRow.style.borderRadius = '6px';
-                lacreRow.style.border = '1px dashed rgba(6, 182, 212, 0.2)';
-                
-                const lacreLabel = document.createElement('span');
-                lacreLabel.className = 'data-label';
-                lacreLabel.style.fontSize = '0.85rem';
-                lacreLabel.textContent = 'Lacre';
-                
-                const lacreValue = document.createElement('span');
-                lacreValue.className = 'data-value';
-                lacreValue.style.fontSize = '0.9rem';
-                lacreValue.textContent = lacreVal.charAt(0).toUpperCase() + lacreVal.slice(1);
-                
-                lacreRow.appendChild(lacreLabel);
-                lacreRow.appendChild(lacreValue);
-                outValveData.appendChild(lacreRow);
-            } else {
+                html += `
+                        <div class="data-row" style="background: rgba(6, 182, 212, 0.05); padding: 0.4rem 0.5rem; border-radius: 6px; border: 1px dashed rgba(6, 182, 212, 0.2); margin-top: 0.5rem;">
+                            <span class="data-label" style="font-size: 0.85rem;">Lacre</span>
+                            <span class="data-value" style="font-size: 0.85rem;">${lacreVal.charAt(0).toUpperCase() + lacreVal.slice(1)}</span>
+                        </div>
+                    </div>
+                `;
+
+                return html;
+            }
+
+            if (type === 'C6' && material === 'Fertilizante') {
+                outValveBadge.textContent = 'Enchimento + Descarga';
+                outValveBadge.className = 'card-badge warning';
                 outValveHighlight.style.display = 'none';
-                outValveData.innerHTML = '<div style="color:var(--text-muted); font-size: 0.9rem; text-align: center; grid-column: 1/-1;">Dados não encontrados.</div>';
+
+                // Grid layout for side by side
+                outValveData.style.display = 'grid';
+                outValveData.style.gridTemplateColumns = 'repeat(auto-fit, minmax(280px, 1fr))';
+                outValveData.style.gap = '1.5rem';
+
+                const enchHTML = getValveDetailsHTML(
+                    'Válvula de Enchimento',
+                    inValveEnchStructure.value,
+                    inValveEnchDiameter.value,
+                    inValveEnchLength.value,
+                    inValveEnchCostura.value,
+                    inValveEnchLacre.value
+                );
+
+                const descHTML = getValveDetailsHTML(
+                    'Válvula de Descarga',
+                    inValveStructure.value,
+                    inValveDiameter.value,
+                    inValveLength.value,
+                    inValveCostura.value,
+                    inValveLacre.value
+                );
+
+                outValveData.innerHTML = enchHTML + descHTML;
+
+            } else {
+                outValveBadge.textContent = vStructure;
+                if (vStructure === 'Tubular') {
+                    outValveBadge.className = 'card-badge';
+                } else {
+                    outValveBadge.className = 'card-badge warning';
+                }
+
+                outValveData.style.display = 'block';
+
+                const descHTML = getValveDetailsHTML(
+                    'Válvula de Descarga',
+                    vStructure,
+                    vDiam,
+                    inValveLength.value,
+                    inValveCostura.value,
+                    inValveLacre.value
+                );
+
+                outValveHighlight.style.display = 'none';
+                outValveData.innerHTML = descHTML;
             }
         }
 
