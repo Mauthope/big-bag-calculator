@@ -629,6 +629,18 @@
                     </div>
                 </div>
 
+                <!-- Trava Card -->
+                <div class="output-card panel" id="trava_card" style="display: none;">
+                    <div class="card-header">
+                        <div class="card-title">Trava</div>
+                        <div class="card-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent);">Ativa</div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Comprimento da Trava</span>
+                        <span class="data-value" id="out_trava_val">-- cm</span>
+                    </div>
+                </div>
+
                 <!-- Utilização Card -->
                 <div class="output-card panel">
                     <div class="card-header">
@@ -800,6 +812,9 @@
         const outLinerBadge = document.getElementById('out_liner_badge');
         const outLinerThick = document.getElementById('out_liner_thick');
         const outLinerFix = document.getElementById('out_liner_fix');
+        
+        const travaCard = document.getElementById('trava_card');
+        const outTravaVal = document.getElementById('out_trava_val');
         
         const outDesc = document.getElementById('out_desc');
         const typeAlert = document.getElementById('typeAlert');
@@ -1043,6 +1058,15 @@
             const topoRes = R <= 5000 ? 600 : (R <= 7500 ? 800 : 1000);
             outTopoRes.textContent = `${topoRes} kgf`;
             outTopoFix.textContent = '50 cm';
+
+
+            // --- TRAVA CALCULATION ---
+            if (padrao === 'Travado') {
+                travaCard.style.display = 'block';
+                outTravaVal.textContent = `${h + 10} cm`;
+            } else {
+                travaCard.style.display = 'none';
+            }
 
 
             // --- UTILIZAÇÃO CALCULATION ---
