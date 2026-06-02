@@ -482,6 +482,35 @@
                 </div>
             </div>
 
+            <!-- Configuração da Válvula -->
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
+                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Configuração da Válvula</label>
+                
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label>Estrutura da Válvula</label>
+                        <select id="in_valve_structure" class="form-control">
+                            <option value="Tubular" selected>Tubular</option>
+                            <option value="Plano">Plano</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Diâmetro (cm)</label>
+                        <select id="in_valve_diameter" class="form-control">
+                            <option value="20">20</option>
+                            <option value="30" selected>30</option>
+                            <option value="35">35</option>
+                            <option value="40">40</option>
+                            <option value="45">45</option>
+                            <option value="50">50</option>
+                            <option value="55">55</option>
+                            <option value="60">60</option>
+                            <option value="70">70</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <!-- Teste de Carga / Simulação -->
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
                 <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Simulação de Carga</label>
@@ -676,6 +705,17 @@
                     </div>
                 </div>
 
+                <!-- Válvula Card -->
+                <div class="output-card panel desc-card" id="valve_card_container">
+                    <div class="card-header" style="border-bottom: 1px solid var(--border);">
+                        <div class="card-title">Válvulas</div>
+                        <div class="card-badge" id="out_valve_badge">Tubular</div>
+                    </div>
+                    <div id="out_valve_data" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+                        <!-- Dynamic data rows injected here -->
+                    </div>
+                </div>
+
                 <!-- Descrição Card -->
                 <div class="output-card panel desc-card">
                     <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
@@ -697,6 +737,28 @@
             "Fertilizante": "FIO 1800 DN : ALÇAS; FIO 2520 DN : FUNDO;\nCOSTURA DAS ALÇAS: COSTURADAS EXTERNAMENTE; COSTURA INFERIOR: CORPO COM DOBRA INTERNA + FUNDO COSTURADO À FIO EXTERNO; PORTA DOCUMENTO IMPRESO CENTRALIZADO NA FACE 'A' DO BIG BAG; IMPRESSÃO: INSTRUÇÕES NA O.P",
             "Travado": "FIO 1800 DN : ALÇAS; FIO 3600 DN : FECHAMENTO DOS PAINÉIS E FUNDO; FIO 2520 DN TG :TRAVAS, TOPO;\nINICIAR COSTURA DAS TRAVAS À 10 CM DA BASE INFERIOR (FUNDO) DO CORTE DO TECIDO; FIXAÇÃO DAS TRAVAS SOBRE O FIO DE MARCAÇÃO AMARELO NA LATERAL DO TECIDO; COSTURA LATERAL PAINEL: COM DOBRA EXTERNA; COSTURA DAS ALÇAS: COSTURAS INTERNAMENTE; COSTURA INFERIOR: CORPO + FUNDO MODELO ENVELOPE COM DOBRA EXTERNA; COSTURA SUPERIOR: CORPO COM DOBRA INTERNA; PORTA DOCUMENTO + ETIQUETA DE IDENTIFICAÇÃO CENTRALIZADOS NA FACE 'A' DO BIG BAG; IMPRESSÃO: INSTRUÇÕES NA O.P; ER 100%",
             "Multi Way": "FIO 1800 DN: ALÇAS; FIO 3600 DN: FUNDO; FIO 2520 DN: CORPO; REUTILIZÁVEL;\nCOSTURA DAS ALÇAS: COSTURADAS INTERNAMENTE COSTURA INFERIOR: CORPO + FUNDO MODELO ENVELOPE COM DOBRA EXTERNA; PORTA DOCUMENTO + ETIQUETA DE IDENTIFICAÇÃO CENTRALIZADOS NA FACE 'A' DO BIG BAG; COSTURA SUPERIOR: CORPO COM DOBRA INTERNA; IMPRESSÃO: INSTRUÇÕES NA O.P; ER 100%"
+        };
+
+        const valveTubularData = {
+            20: { "Tipo de faca": "C", "Facas": "15", "Largura TECIDO": "34 cm", "Comprimento útil do FLAP": "10 cm", "Corte flap COSTURA À FIO": "16 cm", "Corte flap COSTURA COM DOBRA": "18 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "140cm" },
+            30: { "Tipo de faca": "C / X", "Facas": "22", "Largura TECIDO": "45 cm", "Comprimento útil do FLAP": "13 cm", "Corte flap COSTURA À FIO": "19 cm", "Corte flap COSTURA COM DOBRA": "21 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "140cm" },
+            35: { "Tipo de faca": "C / X", "Facas": "28", "Largura TECIDO": "55 cm", "Comprimento útil do FLAP": "16 cm", "Corte flap COSTURA À FIO": "22 cm", "Corte flap COSTURA COM DOBRA": "24 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "140cm" },
+            40: { "Tipo de faca": "C / X", "Facas": "32", "Largura TECIDO": "60 cm", "Comprimento útil do FLAP": "18 cm", "Corte flap COSTURA À FIO": "24 cm", "Corte flap COSTURA COM DOBRA": "26 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "140cm" },
+            45: { "Tipo de faca": "C / X", "Facas": "38", "Largura TECIDO": "70 cm", "Comprimento útil do FLAP": "21 cm", "Corte flap COSTURA À FIO": "27 cm", "Corte flap COSTURA COM DOBRA": "29 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "180cm" },
+            50: { "Tipo de faca": "C / X", "Facas": "43", "Largura TECIDO": "77 cm", "Comprimento útil do FLAP": "24 cm", "Corte flap COSTURA À FIO": "30 cm", "Corte flap COSTURA COM DOBRA": "32 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "180cm" },
+            55: { "Tipo de faca": "C / X", "Facas": "48", "Largura TECIDO": "85 cm", "Comprimento útil do FLAP": "26 cm", "Corte flap COSTURA À FIO": "32 cm", "Corte flap COSTURA COM DOBRA": "34 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "220cm" },
+            60: { "Tipo de faca": "C / X", "Facas": "55", "Largura TECIDO": "96 cm", "Comprimento útil do FLAP": "30 cm", "Corte flap COSTURA À FIO": "36 cm", "Corte flap COSTURA COM DOBRA": "38 cm", "Cadarço válvula Corte x Útil": "140cm x 136cm", "Cadarço do flap Corte": "220cm" }
+        };
+
+        const valvePlanoData = {
+            30: { "Tipo de faca": "C / X", "Facas": "22", "Comprimento fechamento (Dobra Simples)": "96 cm", "Dobra fechamento (Dobra Dupla)": "100 cm", "Largura útil da Válvula": "45 cm", "Comprimento útil do flap": "13 cm", "Altura corte flap COSTURA À FIO": "19 cm", "Altura corte flap COSTURA COM DOBRA": "21 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "15 cm", "Fixação cadarço (descarga)": "13 cm" },
+            35: { "Tipo de faca": "C / X", "Facas": "28", "Comprimento fechamento (Dobra Simples)": "116 cm", "Dobra fechamento (Dobra Dupla)": "120 cm", "Largura útil da Válvula": "55 cm", "Comprimento útil do flap": "16 cm", "Altura corte flap COSTURA À FIO": "22 cm", "Altura corte flap COSTURA COM DOBRA": "24 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "17 cm", "Fixação cadarço (descarga)": "16 cm" },
+            40: { "Tipo de faca": "C / X", "Facas": "32", "Comprimento fechamento (Dobra Simples)": "126 cm", "Dobra fechamento (Dobra Dupla)": "130 cm", "Largura útil da Válvula": "60 cm", "Comprimento útil do flap": "18 cm", "Altura corte flap COSTURA À FIO": "24 cm", "Altura corte flap COSTURA COM DOBRA": "26 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "20 cm", "Fixação cadarço (descarga)": "18 cm" },
+            45: { "Tipo de faca": "C / X", "Facas": "38", "Comprimento fechamento (Dobra Simples)": "146 cm", "Dobra fechamento (Dobra Dupla)": "150 cm", "Largura útil da Válvula": "70 cm", "Comprimento útil do flap": "21 cm", "Altura corte flap COSTURA À FIO": "27 cm", "Altura corte flap COSTURA COM DOBRA": "29 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "22 cm", "Fixação cadarço (descarga)": "21 cm" },
+            50: { "Tipo de faca": "C / X", "Facas": "43", "Comprimento fechamento (Dobra Simples)": "160 cm", "Dobra fechamento (Dobra Dupla)": "164 cm", "Largura útil da Válvula": "77 cm", "Comprimento útil do flap": "24 cm", "Altura corte flap COSTURA À FIO": "30 cm", "Altura corte flap COSTURA COM DOBRA": "32 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "25 cm", "Fixação cadarço (descarga)": "24 cm" },
+            55: { "Tipo de faca": "C / X", "Facas": "48", "Comprimento fechamento (Dobra Simples)": "176 cm", "Dobra fechamento (Dobra Dupla)": "180 cm", "Largura útil da Válvula": "85 cm", "Comprimento útil do flap": "26 cm", "Altura corte flap COSTURA À FIO": "32 cm", "Altura corte flap COSTURA COM DOBRA": "34 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "27 cm", "Fixação cadarço (descarga)": "26 cm" },
+            60: { "Tipo de faca": "C / X", "Facas": "55", "Comprimento fechamento (Dobra Simples)": "198 cm", "Dobra fechamento (Dobra Dupla)": "202 cm", "Largura útil da Válvula": "96 cm", "Comprimento útil do flap": "30 cm", "Altura corte flap COSTURA À FIO": "36 cm", "Altura corte flap COSTURA COM DOBRA": "38 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "140cm", "Fixação cadarço (enchimento)": "30 cm", "Fixação cadarço (descarga)": "30 cm" },
+            70: { "Tipo de faca": "C", "Facas": "64", "Comprimento fechamento (Dobra Simples)": "230 cm", "Dobra fechamento (Dobra Dupla)": "234 cm", "Largura útil da Válvula": "112 cm", "Comprimento útil do flap": "34 cm", "Altura corte flap COSTURA À FIO": "40 cm", "Altura corte flap COSTURA COM DOBRA": "42 cm", "Cadarço válvula descarga Corte x Útil": "140cm x 136cm", "Cadarço fundo 'X'": "240cm", "Fixação cadarço (enchimento)": "34 cm", "Fixação cadarço (descarga)": "34 cm" }
         };
 
         // Get DOM Elements
@@ -747,6 +809,12 @@
         const testStatusBadge = document.getElementById('test_status_badge');
         const adpVar = document.getElementById('adp_var');
         const adpResult = document.getElementById('adp_result');
+
+        const inValveStructure = document.getElementById('in_valve_structure');
+        const inValveDiameter = document.getElementById('in_valve_diameter');
+        const outValveBadge = document.getElementById('out_valve_badge');
+        const outValveData = document.getElementById('out_valve_data');
+        const valveCardContainer = document.getElementById('valve_card_container');
 
         function enforceRules() {
             const bagShapeSelect = document.getElementById('in_bag_shape');
@@ -826,6 +894,30 @@
                 }
             } else {
                 structLiner.disabled = false;
+            }
+
+            // 6. Enforce Valve constraints dynamically
+            const valveStructure = inValveStructure.value;
+            let currentValveDiam = inValveDiameter.value;
+            
+            // Adjust options
+            Array.from(inValveDiameter.options).forEach(opt => {
+                if (valveStructure === 'Tubular') {
+                    // Tubular has 20, but not 70
+                    if (opt.value === '70') opt.disabled = true;
+                    else opt.disabled = false;
+                } else if (valveStructure === 'Plano') {
+                    // Plano has 70, but not 20
+                    if (opt.value === '20') opt.disabled = true;
+                    else opt.disabled = false;
+                }
+            });
+
+            // Adjust selected if it falls on a disabled option
+            if (valveStructure === 'Tubular' && currentValveDiam === '70') {
+                inValveDiameter.value = '60';
+            } else if (valveStructure === 'Plano' && currentValveDiam === '20') {
+                inValveDiameter.value = '30';
             }
         }
 
@@ -1150,6 +1242,48 @@
                 adpResult.textContent = `${newDim.toFixed(1)} cm`;
             } else {
                 adpResult.textContent = '-- cm';
+            }
+
+            // --- VÁLVULA CALCULATION ---
+            const vStructure = inValveStructure.value;
+            const vDiam = inValveDiameter.value;
+
+            outValveBadge.textContent = vStructure;
+            if (vStructure === 'Tubular') {
+                outValveBadge.className = 'card-badge';
+            } else {
+                outValveBadge.className = 'card-badge warning';
+            }
+
+            const valveDataObj = vStructure === 'Tubular' ? valveTubularData[vDiam] : valvePlanoData[vDiam];
+
+            // Clear previous data
+            outValveData.innerHTML = '';
+            
+            if (valveDataObj) {
+                for (const [key, val] of Object.entries(valveDataObj)) {
+                    const row = document.createElement('div');
+                    row.className = 'data-row';
+                    row.style.background = 'rgba(0,0,0,0.1)';
+                    row.style.padding = '0.5rem';
+                    row.style.borderRadius = '6px';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'data-label';
+                    label.style.fontSize = '0.85rem';
+                    label.textContent = key;
+                    
+                    const value = document.createElement('span');
+                    value.className = 'data-value';
+                    value.style.fontSize = '0.9rem';
+                    value.textContent = val;
+                    
+                    row.appendChild(label);
+                    row.appendChild(value);
+                    outValveData.appendChild(row);
+                }
+            } else {
+                outValveData.innerHTML = '<div style="color:var(--text-muted); font-size: 0.9rem; text-align: center; grid-column: 1/-1;">Dados não encontrados.</div>';
             }
         }
 
