@@ -386,7 +386,9 @@
                     <option value="Circular Travado">Circular Travado</option>
                     <option value="Circular">Circular</option>
                     <option value="4 painéis">4 painéis</option>
+                    <option value="4 painéis travado">4 painéis travado</option>
                     <option value="8 painéis">8 painéis</option>
+                    <option value="8 painéis travado">8 painéis travado</option>
                     <option value="Gota">Gota</option>
                     <option value="Sling">Sling</option>
                     <option value="Corpou">Corpo U</option>
@@ -614,7 +616,7 @@
                             <span class="data-label">Tecido</span>
                             <span class="data-value" id="out_tecido">-- g</span>
                         </div>
-                        <div class="data-row">
+                        <div class="data-row" id="row_lamina">
                             <span class="data-label">Lâmina</span>
                             <span class="data-value" id="out_lamina">-- g</span>
                         </div>
@@ -885,7 +887,7 @@
             // Circular and Gota must be Tubular only
             const isTubularOnly = ['Circular', 'Gota'].includes(bagShape);
             // 4 painéis, 8 painéis, Corpo U and Sling must be Plano only
-            const isPlanoOnly = ['4 painéis', '8 painéis', 'Corpou', 'Sling'].includes(bagShape);
+            const isPlanoOnly = ['4 painéis', '8 painéis', '4 painéis travado', '8 painéis travado', 'Corpou', 'Sling'].includes(bagShape);
 
             if (isTubularOnly) {
                 structPlano.disabled = true;
@@ -902,8 +904,8 @@
             }
 
             // 5. Enforce Liner restrictions based on Tipo
-            // Sling or Circular Travado cannot have liner
-            const isLinerBlocked = (bagShape === 'Circular Travado' || bagShape === 'Sling');
+            // Sling or Circular Travado cannot have liner, and any option with "travado" is blocked
+            const isLinerBlocked = (bagShape.toLowerCase().includes('travado') || bagShape === 'Sling');
             if (isLinerBlocked) {
                 structLiner.disabled = true;
                 if (structLiner.checked) {
@@ -1014,8 +1016,12 @@
                 else { tecido = 240; lamina = 35; }
             }
             
+            const rowLamina = document.getElementById('row_lamina');
             if (acabamento === 'Convencional') {
                 lamina = 0;
+                if (rowLamina) rowLamina.style.display = 'none';
+            } else {
+                if (rowLamina) rowLamina.style.display = 'flex';
             }
 
             outTecido.textContent = `${tecido} g`;
@@ -1079,7 +1085,7 @@
             outTopoDim.textContent = `${topoW.toFixed(1)} x ${topoL.toFixed(1)} cm`;
 
             // --- TRAVA CALCULATION ---
-            if (bagShape === 'Circular Travado' || bagShape === '4 painéis' || bagShape === '8 painéis') {
+            if (bagShape === 'Circular Travado' || bagShape === '4 painéis' || bagShape === '8 painéis' || bagShape === '4 painéis travado' || bagShape === '8 painéis travado') {
                 travaCard.style.display = 'block';
                 outTravaVal.textContent = `${h + 10} cm`;
             } else {
