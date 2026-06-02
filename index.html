@@ -349,6 +349,65 @@
             text-align: center;
             display: none;
         }
+
+        /* Color themes for cards */
+        .card-corpo {
+            --card-accent: #3b82f6; /* Blue */
+            --card-accent-glow: rgba(59, 130, 246, 0.15);
+        }
+        .card-fundo {
+            --card-accent: #10b981; /* Green */
+            --card-accent-glow: rgba(16, 185, 129, 0.15);
+        }
+        .card-alca {
+            --card-accent: #f59e0b; /* Amber */
+            --card-accent-glow: rgba(245, 158, 11, 0.15);
+        }
+        .card-topo {
+            --card-accent: #8b5cf6; /* Purple */
+            --card-accent-glow: rgba(139, 92, 246, 0.15);
+        }
+        .card-trava {
+            --card-accent: #ec4899; /* Pink */
+            --card-accent-glow: rgba(236, 72, 153, 0.15);
+        }
+        .card-costura {
+            --card-accent: #d946ef; /* Fuchsia */
+            --card-accent-glow: rgba(217, 70, 239, 0.15);
+        }
+        .card-empilhamento {
+            --card-accent: #eab308; /* Yellow */
+            --card-accent-glow: rgba(234, 179, 8, 0.15);
+        }
+        .card-liner {
+            --card-accent: #14b8a6; /* Teal */
+            --card-accent-glow: rgba(20, 184, 166, 0.15);
+        }
+        .card-valvulas {
+            --card-accent: #06b6d4; /* Cyan */
+            --card-accent-glow: rgba(6, 182, 212, 0.15);
+        }
+        .card-spec {
+            --card-accent: #94a3b8; /* Slate/Muted */
+            --card-accent-glow: rgba(148, 163, 184, 0.15);
+        }
+
+        .output-card.panel {
+            border-top: 4px solid var(--card-accent, var(--border)) !important;
+            transition: var(--transition);
+        }
+        .output-card.panel:hover {
+            box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.3), 0 0 15px var(--card-accent-glow) !important;
+            border-color: var(--card-accent) !important;
+        }
+        .output-card .card-badge {
+            background: var(--card-accent-glow) !important;
+            color: var(--card-accent) !important;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .output-card .card-title {
+            color: var(--text-main);
+        }
     </style>
 </head>
 <body>
@@ -552,7 +611,7 @@
 
             <!-- Configuração da Válvula (Enchimento) -->
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border); display: none;" id="section_valve_enchimento">
-                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Configuração da Válvula (Enchimento)</label>
+                <label style="color: #f59e0b; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Configuração da Válvula (Enchimento)</label>
                 
                 <div class="grid-2">
                     <div class="form-group">
@@ -604,7 +663,7 @@
 
             <!-- Teste de Carga / Simulação -->
             <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px dashed var(--border);">
-                <label style="color: var(--accent); font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Simulação de Carga</label>
+                <label style="color: #10b981; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 0.75rem;">Simulação de Carga</label>
                 
                 <div class="grid-2" style="align-items: end; margin-bottom: 1rem;">
                     <div class="form-group" style="margin-bottom: 0;">
@@ -639,7 +698,7 @@
             <div class="outputs-grid">
                 
                 <!-- Corpo Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-corpo">
                     <div class="card-header">
                         <div class="card-title">Corpo</div>
                         <div class="card-badge" id="out_r_badge">R: --</div>
@@ -674,7 +733,7 @@
                 </div>
 
                 <!-- Fundo Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-fundo">
                     <div class="card-header">
                         <div class="card-title">Fundo</div>
                         <div class="card-badge" style="background: rgba(255,255,255,0.1); color:#fff">Padrão</div>
@@ -693,7 +752,7 @@
                 </div>
 
                 <!-- Alça Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-alca">
                     <div class="card-header">
                         <div class="card-title">Alça</div>
                         <div class="card-badge" id="out_alca_badge">Simples</div>
@@ -709,7 +768,7 @@
                 </div>
 
                 <!-- Topo Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-topo">
                     <div class="card-header">
                         <div class="card-title">Topo</div>
                         <div class="card-badge" id="out_topo_badge">Simples</div>
@@ -748,7 +807,7 @@
                 </div>
 
                 <!-- Trava Card -->
-                <div class="output-card panel" id="trava_card" style="display: none;">
+                <div class="output-card panel card-trava" id="trava_card" style="display: none;">
                     <div class="card-header">
                         <div class="card-title">Trava</div>
                         <div class="card-badge" style="background: rgba(6, 182, 212, 0.15); color: var(--accent);">Ativa</div>
@@ -760,7 +819,7 @@
                 </div>
 
                 <!-- Costura Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-costura">
                     <div class="card-header">
                         <div class="card-title">Costura</div>
                         <div class="card-badge" id="out_costura_badge">Simples</div>
@@ -784,7 +843,7 @@
                 </div>
 
                 <!-- Empilhamento Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-empilhamento">
                     <div class="card-header">
                         <div class="card-title">Empilhamento</div>
                         <div class="card-badge" id="out_empilhamento_badge">Simples</div>
@@ -800,7 +859,7 @@
                 </div>
 
                 <!-- Liner Card -->
-                <div class="output-card panel">
+                <div class="output-card panel card-liner">
                     <div class="card-header">
                         <div class="card-title">Liner</div>
                         <div class="card-badge" id="out_liner_badge">N/A</div>
@@ -816,7 +875,7 @@
                 </div>
 
                 <!-- Válvula Card -->
-                <div class="output-card panel desc-card" id="valve_card_container">
+                <div class="output-card panel desc-card card-valvulas" id="valve_card_container">
                     <div class="card-header" style="border-bottom: 1px solid var(--border);">
                         <div class="card-title">Válvulas</div>
                         <div class="card-badge" id="out_valve_badge">Tubular</div>
@@ -830,7 +889,7 @@
                 </div>
 
                 <!-- Descrição Card -->
-                <div class="output-card panel desc-card">
+                <div class="output-card panel desc-card card-spec">
                     <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
                         <div class="card-title">Especificação Técnica</div>
                     </div>
