@@ -506,12 +506,27 @@
                         <label for="struct_no_liner" class="radio-label">Sem liner</label>
                     </div>
                 </div>
-                <div class="form-group" id="group_liner_corte" style="display: none; margin-top: 0.75rem; margin-bottom: 0;">
-                    <label>Corte do Liner</label>
-                    <select id="in_liner_corte" class="form-control">
-                        <option value="soldado" selected>Soldado</option>
-                        <option value="corte a frio">Corte a frio</option>
-                    </select>
+                <div id="group_liner_inputs" style="display: none; margin-top: 0.75rem;">
+                    <div class="form-group" id="group_liner_corte" style="display: none; margin-bottom: 0.75rem;">
+                        <label>Corte do Liner</label>
+                        <select id="in_liner_corte" class="form-control">
+                            <option value="soldado" selected>Soldado</option>
+                            <option value="corte a frio">Corte a frio</option>
+                        </select>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Espessura (micras)</label>
+                            <input type="number" id="in_liner_espessura" class="form-control" value="50">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label>Fixação</label>
+                            <select id="in_liner_fixacao" class="form-control">
+                                <option value="colado">Colado</option>
+                                <option value="solto" selected>Solto</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1022,6 +1037,33 @@
 
         const outTopoDim = document.getElementById('out_topo_dim');
 
+        let isLinerEspessuraDirty = false;
+        let isLinerFixacaoDirty = false;
+        
+        // Add listeners directly for new liner inputs since script is at end of body
+        document.addEventListener('DOMContentLoaded', () => {
+            const inLinerEsp = document.getElementById('in_liner_espessura');
+            const inLinerFix = document.getElementById('in_liner_fixacao');
+            if (inLinerEsp) {
+                inLinerEsp.addEventListener('input', () => { isLinerEspessuraDirty = true; calculate(); });
+                inLinerEsp.addEventListener('change', () => { isLinerEspessuraDirty = true; calculate(); });
+            }
+            if (inLinerFix) {
+                inLinerFix.addEventListener('change', () => { isLinerFixacaoDirty = true; calculate(); });
+            }
+        });
+
+        // Also run a backup check outside DOMContentLoaded in case DOM is already parsed
+        const inLinerEspBackup = document.getElementById('in_liner_espessura');
+        const inLinerFixBackup = document.getElementById('in_liner_fixacao');
+        if (inLinerEspBackup) {
+            inLinerEspBackup.addEventListener('input', () => { isLinerEspessuraDirty = true; calculate(); });
+            inLinerEspBackup.addEventListener('change', () => { isLinerEspessuraDirty = true; calculate(); });
+        }
+        if (inLinerFixBackup) {
+            inLinerFixBackup.addEventListener('change', () => { isLinerFixacaoDirty = true; calculate(); });
+        }
+
         function enforceRules() {
             const bagShapeSelect = document.getElementById('in_bag_shape');
             const bagShape = bagShapeSelect.value;
@@ -1075,8 +1117,18 @@
                 structLiner.disabled = false;
             }
 
-            // Show/hide group_liner_corte based on C6 Fertilizante and Com Liner
+            // Show/hide group_liner_inputs wrapper based on Com Liner
             const linerVal = document.querySelector('input[name="liner"]:checked').value;
+            const groupLinerInputs = document.getElementById('group_liner_inputs');
+            if (groupLinerInputs) {
+                if (linerVal === 'com') {
+                    groupLinerInputs.style.display = 'block';
+                } else {
+                    groupLinerInputs.style.display = 'none';
+                }
+            }
+
+            // Show/hide group_liner_corte based on C6 Fertilizante and Com Liner
             const groupLinerCorte = document.getElementById('group_liner_corte');
             if (groupLinerCorte) {
                 if (type === 'C6' && material === 'Fertilizante' && linerVal === 'com') {
@@ -1084,6 +1136,18 @@
                 } else {
                     groupLinerCorte.style.display = 'none';
                 }
+            }
+
+            // Set default values for espessura and fixacao if not manually touched
+            if (!isLinerEspessuraDirty) {
+                const defaultThick = ['PoFino', 'Farinha'].includes(material) ? 70 : 50;
+                const inLinerEsp = document.getElementById('in_liner_espessura');
+                if (inLinerEsp) inLinerEsp.value = defaultThick;
+            }
+            if (!isLinerFixacaoDirty) {
+                const defaultFix = ['Circular Travado', 'Corpou'].includes(bagShape) ? 'colado' : 'solto';
+                const inLinerFix = document.getElementById('in_liner_fixacao');
+                if (inLinerFix) inLinerFix.value = defaultFix;
             }
 
             // 6. Enforce Valve constraints dynamically
@@ -1374,10 +1438,10 @@
             if (liner === 'com') {
                 outLinerBadge.textContent = 'PEBD Ativo';
                 outLinerBadge.className = 'card-badge';
-                const thick = ['PoFino', 'Farinha'].includes(material) ? 70 : 50;
+                const thick = document.getElementById('in_liner_espessura').value;
                 outLinerThick.textContent = `${thick} micras`;
-                const linerFixType = ['Circular Travado', 'Corpou'].includes(bagShape) ? 'Colado' : 'Costurado';
-                outLinerFix.textContent = linerFixType;
+                const linerFixType = document.getElementById('in_liner_fixacao').value;
+                outLinerFix.textContent = linerFixType.charAt(0).toUpperCase() + linerFixType.slice(1);
 
                 if (type === 'C6' && material === 'Fertilizante') {
                     const corteLiner = document.getElementById('in_liner_corte').value;
