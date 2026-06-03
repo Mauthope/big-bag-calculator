@@ -506,6 +506,13 @@
                         <label for="struct_no_liner" class="radio-label">Sem liner</label>
                     </div>
                 </div>
+                <div class="form-group" id="group_liner_corte" style="display: none; margin-top: 0.75rem; margin-bottom: 0;">
+                    <label>Corte do Liner</label>
+                    <select id="in_liner_corte" class="form-control">
+                        <option value="soldado" selected>Soldado</option>
+                        <option value="corte a frio">Corte a frio</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-group">
@@ -872,6 +879,14 @@
                         <span class="data-label">Fixação</span>
                         <span class="data-value" id="out_liner_fix">--</span>
                     </div>
+                    <div class="data-row" id="row_liner_corte_tipo" style="display: none;">
+                        <span class="data-label">Corte do Liner</span>
+                        <span class="data-value" id="out_liner_corte_tipo">--</span>
+                    </div>
+                    <div class="data-row" id="row_liner_corte_val" style="display: none;">
+                        <span class="data-label">Comprimento do Liner</span>
+                        <span class="data-value" id="out_liner_corte_val">-- cm</span>
+                    </div>
                 </div>
 
                 <!-- Válvula Card -->
@@ -1043,7 +1058,14 @@
 
             // 5. Enforce Liner restrictions based on Tipo
             // Sling or Circular Travado cannot have liner, and any option with "travado" is blocked
-            const isLinerBlocked = (bagShape.toLowerCase().includes('travado') || bagShape === 'Sling');
+            const type = document.getElementById('in_type').value;
+            const material = document.getElementById('in_material').value;
+
+            let isLinerBlocked = (bagShape.toLowerCase().includes('travado') || bagShape === 'Sling');
+            if (type === 'C6' && material === 'Fertilizante') {
+                isLinerBlocked = false;
+            }
+
             if (isLinerBlocked) {
                 structLiner.disabled = true;
                 if (structLiner.checked) {
@@ -1053,10 +1075,18 @@
                 structLiner.disabled = false;
             }
 
-            // 6. Enforce Valve constraints dynamically
-            const type = document.getElementById('in_type').value;
-            const material = document.getElementById('in_material').value;
+            // Show/hide group_liner_corte based on C6 Fertilizante and Com Liner
+            const linerVal = document.querySelector('input[name="liner"]:checked').value;
+            const groupLinerCorte = document.getElementById('group_liner_corte');
+            if (groupLinerCorte) {
+                if (type === 'C6' && material === 'Fertilizante' && linerVal === 'com') {
+                    groupLinerCorte.style.display = 'block';
+                } else {
+                    groupLinerCorte.style.display = 'none';
+                }
+            }
 
+            // 6. Enforce Valve constraints dynamically
             // Toggle visibility of Válvula de Enchimento inputs based on Model=C6 and Material=Fertilizante
             const sectionValveEnch = document.getElementById('section_valve_enchimento');
             if (type === 'C6' && material === 'Fertilizante') {
@@ -1336,6 +1366,11 @@
 
 
             // --- LINER CALCULATION ---
+            const rowLinerCorteTipo = document.getElementById('row_liner_corte_tipo');
+            const rowLinerCorteVal = document.getElementById('row_liner_corte_val');
+            const outLinerCorteTipo = document.getElementById('out_liner_corte_tipo');
+            const outLinerCorteVal = document.getElementById('out_liner_corte_val');
+
             if (liner === 'com') {
                 outLinerBadge.textContent = 'PEBD Ativo';
                 outLinerBadge.className = 'card-badge';
@@ -1343,11 +1378,35 @@
                 outLinerThick.textContent = `${thick} micras`;
                 const linerFixType = ['Circular Travado', 'Corpou'].includes(bagShape) ? 'Colado' : 'Costurado';
                 outLinerFix.textContent = linerFixType;
+
+                if (type === 'C6' && material === 'Fertilizante') {
+                    const corteLiner = document.getElementById('in_liner_corte').value;
+                    const vEnchLength = parseFloat(document.getElementById('in_valve_ench_length').value) || 0;
+                    const vDescLength = parseFloat(document.getElementById('in_valve_length').value) || 0;
+
+                    let compLiner = 0;
+                    if (corteLiner === 'soldado') {
+                        compLiner = h + vEnchLength + (w / 2) + (l / 2) + 5;
+                    } else { // corte a frio
+                        compLiner = h + vEnchLength + vDescLength + (w / 2) + (l / 2) + 5;
+                    }
+
+                    if (outLinerCorteTipo) outLinerCorteTipo.textContent = corteLiner.charAt(0).toUpperCase() + corteLiner.slice(1);
+                    if (outLinerCorteVal) outLinerCorteVal.textContent = `${compLiner.toFixed(1)} cm`;
+
+                    if (rowLinerCorteTipo) rowLinerCorteTipo.style.display = 'flex';
+                    if (rowLinerCorteVal) rowLinerCorteVal.style.display = 'flex';
+                } else {
+                    if (rowLinerCorteTipo) rowLinerCorteTipo.style.display = 'none';
+                    if (rowLinerCorteVal) rowLinerCorteVal.style.display = 'none';
+                }
             } else {
                 outLinerBadge.textContent = 'N/A';
                 outLinerBadge.className = 'card-badge muted';
                 outLinerThick.textContent = '-- micras';
                 outLinerFix.textContent = 'Sem Liner';
+                if (rowLinerCorteTipo) rowLinerCorteTipo.style.display = 'none';
+                if (rowLinerCorteVal) rowLinerCorteVal.style.display = 'none';
             }
 
 
