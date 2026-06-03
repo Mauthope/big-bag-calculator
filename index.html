@@ -1548,7 +1548,7 @@
 
                 for (const [key, originalVal] of Object.entries(valveDataObj)) {
                     let val = originalVal;
-                    if ((key === "Cadarço válvula Corte x útil" || key === "Cadarço válvula descarga Corte x útil") && lacreVal === "sim") {
+                    if ((key.toLowerCase() === "cadarço válvula corte x útil" || key.toLowerCase() === "cadarço válvula descarga corte x útil") && lacreVal === "sim") {
                         const parts = val.split(/\s*x\s*/i);
                         if (parts.length > 0) {
                             const firstPart = parts[0].trim();
