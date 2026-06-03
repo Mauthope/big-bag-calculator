@@ -1524,32 +1524,29 @@
                     const corteLiner = document.getElementById('in_liner_corte').value;
                     const linerFixacao = document.getElementById('in_liner_fixacao').value;
 
-                    let cortePart = "";
-                    if (corteLiner === 'soldado') {
-                        cortePart = "LINER SOLDADO NO FUNDO";
-                    } else {
-                        cortePart = "LINER SEM SOLDA NO FUNDO";
-                    }
-
-                    let fixacaoPart = "";
+                    let keyComb = `${corteLiner}_${linerFixacao}`;
                     if (linerFixacao === 'colado') {
                         const colaTipo = document.getElementById('in_liner_tipo_cola').value;
-                        if (colaTipo === 'cola lateral/fundo') {
-                            fixacaoPart = ", COLADO NAS 04 PAREDES LATERAIS E NO FUNDO DO BIG BAG";
-                        } else if (colaTipo === 'cola lateral') {
-                            fixacaoPart = ", COLADO NAS 04 PAREDES LATERAIS E SEM COLA NO FUNDO DO BIG BAG";
-                        } else if (colaTipo === 'cola fundo') {
-                            fixacaoPart = ", COLADO NO FUNDO E SEM COLA NAS PAREDES LATERAIS DO BIG BAG";
-                        }
-                    } else { // solto
+                        keyComb += `_${colaTipo}`;
+                    } else {
                         const soltoTipo = document.getElementById('in_liner_tipo_solto').value;
-                        if (soltoTipo === 'solto dentro') {
-                            fixacaoPart = " / SEM COLA SOLTO DENTRO BAG";
-                        } else {
-                            fixacaoPart = ", SEM COLA, APENAS AMARRADO NA VÁLVULA DE DESCARGA";
-                        }
+                        keyComb += `_${soltoTipo}`;
                     }
-                    linerPhrase = cortePart + fixacaoPart + "\n";
+
+                    const linerPhrases = {
+                        "corte a frio_colado_cola lateral/fundo": "LINER SEM SOLDA NO FUNDO, COLADO NAS 04 PAREDES LATERAIS E NO FUNDO DO BIG BAG",
+                        "corte a frio_colado_cola fundo": "LINER SEM SOLDA NO FUNDO, COLADO NO FUNDO DO BIG BAG",
+                        "corte a frio_colado_cola lateral": "LINER SEM SOLDA NO FUNDO, COLADO NAS 04 PAREDES LATERAIS E SEM COLA NO FUNDO DO BIG BAG",
+                        "corte a frio_solto_amarrado": "LINER SEM SOLDA NO FUNDO, SEM COLA, APENAS AMARRADO NA VÁLVULA DE DESCARGA",
+                        "corte a frio_solto_solto dentro": "LINER SEM SOLDA NO FUNDO / SEM COLA SOLTO DENTRO BAG",
+                        "soldado_colado_cola lateral": "LINER SOLDADO NO FUNDO, COLADO NAS 04 PAREDES LATERAIS E SEM COLA NO FUNDO DO BIG BAG",
+                        "soldado_colado_cola lateral/fundo": "LINER SOLDADO NO FUNDO, COLADO NAS 04 PAREDES LATERAIS E NO FUNDO DO BIG BAG",
+                        "soldado_colado_cola fundo": "LINER SOLDADO NO FUNDO, COLADO NO FUNDO DO BIG BAG",
+                        "soldado_solto_solto dentro": "LINER SOLDADO NO FUNDO / SEM COLA SOLTO DENTRO BAG",
+                        "soldado_solto_amarrado": "LINER SOLDADO NO FUNDO, SEM COLA, APENAS AMARRADO NA VÁLVULA DE DESCARGA"
+                    };
+
+                    linerPhrase = (linerPhrases[keyComb] || "") + "\n";
                 }
 
                 desc = linerPhrase + 
