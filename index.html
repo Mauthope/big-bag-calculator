@@ -1546,25 +1546,44 @@
                         </div>
                 `;
 
+                let cadarçoOriginalRowVal = null;
+
                 for (const [key, originalVal] of Object.entries(valveDataObj)) {
-                    let val = originalVal;
-                    if ((key.toLowerCase() === "cadarço válvula corte x útil" || key.toLowerCase() === "cadarço válvula descarga corte x útil") && lacreVal === "sim") {
-                        const parts = val.split(/\s*x\s*/i);
-                        if (parts.length > 0) {
-                            const firstPart = parts[0].trim();
-                            const numMatch = firstPart.match(/^(\d+)/);
-                            if (numMatch) {
-                                const firstNum = parseInt(numMatch[1], 10);
-                                const secondNum = firstNum - 10;
-                                const suffix = firstPart.replace(/^\d+/, '');
-                                val = `${firstPart} x ${secondNum}${suffix}`;
-                            }
+                    const keyLower = key.toLowerCase();
+                    const isCadarçoValvulaLine = keyLower.includes("cadar") && keyLower.includes("corte") && (keyLower.includes("útil") || keyLower.includes("util"));
+
+                    if (isCadarçoValvulaLine) {
+                        cadarçoOriginalRowVal = originalVal;
+                        if (lacreVal === 'sim') {
+                            continue;
                         }
                     }
+
                     html += `
                         <div class="data-row" style="background: rgba(0,0,0,0.1); padding: 0.4rem 0.5rem; border-radius: 6px; margin-bottom: 0.35rem;">
                             <span class="data-label" style="font-size: 0.85rem;">${key}</span>
-                            <span class="data-value" style="font-size: 0.85rem;">${val}</span>
+                            <span class="data-value" style="font-size: 0.85rem;">${originalVal}</span>
+                        </div>
+                    `;
+                }
+
+                if (lacreVal === 'sim' && cadarçoOriginalRowVal) {
+                    const parts = cadarçoOriginalRowVal.split(/\s*x\s*/i);
+                    let newCadarçoVal = cadarçoOriginalRowVal;
+                    if (parts.length > 0) {
+                        const firstPart = parts[0].trim();
+                        const numMatch = firstPart.match(/^(\d+)/);
+                        if (numMatch) {
+                            const firstNum = parseInt(numMatch[1], 10);
+                            const secondNum = firstNum - 10;
+                            const suffix = firstPart.replace(/^\d+/, '');
+                            newCadarçoVal = `${firstPart} x ${secondNum}${suffix}`;
+                        }
+                    }
+                    html += `
+                        <div class="data-row" style="background: rgba(6, 182, 212, 0.1); padding: 0.4rem 0.5rem; border-radius: 6px; margin-bottom: 0.35rem; border: 1px solid rgba(6, 182, 212, 0.3);">
+                            <span class="data-label" style="font-size: 0.85rem; color: var(--accent); font-weight: 600;">Cadarço válvula com Lacre</span>
+                            <span class="data-value" style="font-size: 0.85rem; color: #fff; font-weight: 700;">${newCadarçoVal}</span>
                         </div>
                     `;
                 }
