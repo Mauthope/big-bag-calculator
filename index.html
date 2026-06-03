@@ -527,6 +527,10 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group" style="margin-top: 0.75rem; margin-bottom: 0;">
+                        <label>Sobra de Liner/Cliente (cm)</label>
+                        <input type="number" id="in_liner_sobra" class="form-control" placeholder="0" value="0">
+                    </div>
                 </div>
             </div>
 
@@ -1454,6 +1458,9 @@
                     } else { // corte a frio
                         compLiner = h + vEnchLength + vDescLength + (w / 2) + (l / 2) + 5;
                     }
+
+                    const sobraVal = parseFloat(document.getElementById('in_liner_sobra').value) || 0;
+                    compLiner += sobraVal;
 
                     if (outLinerCorteTipo) outLinerCorteTipo.textContent = corteLiner.charAt(0).toUpperCase() + corteLiner.slice(1);
                     if (outLinerCorteVal) outLinerCorteVal.textContent = `${compLiner.toFixed(1)} cm`;
