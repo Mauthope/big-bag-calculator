@@ -1546,7 +1546,21 @@
                         </div>
                 `;
 
-                for (const [key, val] of Object.entries(valveDataObj)) {
+                for (const [key, originalVal] of Object.entries(valveDataObj)) {
+                    let val = originalVal;
+                    if ((key === "Cadarço válvula Corte x útil" || key === "Cadarço válvula descarga Corte x útil") && lacreVal === "sim") {
+                        const parts = val.split(/\s*x\s*/i);
+                        if (parts.length > 0) {
+                            const firstPart = parts[0].trim();
+                            const numMatch = firstPart.match(/^(\d+)/);
+                            if (numMatch) {
+                                const firstNum = parseInt(numMatch[1], 10);
+                                const secondNum = firstNum - 10;
+                                const suffix = firstPart.replace(/^\d+/, '');
+                                val = `${firstPart} x ${secondNum}${suffix}`;
+                            }
+                        }
+                    }
                     html += `
                         <div class="data-row" style="background: rgba(0,0,0,0.1); padding: 0.4rem 0.5rem; border-radius: 6px; margin-bottom: 0.35rem;">
                             <span class="data-label" style="font-size: 0.85rem;">${key}</span>
