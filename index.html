@@ -514,7 +514,7 @@
                             <option value="corte a frio">Corte a frio</option>
                         </select>
                     </div>
-                    <div class="grid-2">
+                    <div class="grid-2" style="margin-bottom: 0.75rem;">
                         <div class="form-group" style="margin-bottom: 0;">
                             <label>Espessura (micras)</label>
                             <input type="number" id="in_liner_espessura" class="form-control" value="50">
@@ -527,7 +527,22 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top: 0.75rem; margin-bottom: 0;">
+                    <div class="form-group" id="group_liner_tipo_cola" style="display: none; margin-bottom: 0.75rem;">
+                        <label>Tipo de Cola</label>
+                        <select id="in_liner_tipo_cola" class="form-control">
+                            <option value="cola lateral/fundo" selected>Cola lateral / fundo</option>
+                            <option value="cola fundo">Cola fundo</option>
+                            <option value="cola lateral">Cola lateral</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="group_liner_tipo_solto" style="display: none; margin-bottom: 0.75rem;">
+                        <label>Tipo de Fixação Solto</label>
+                        <select id="in_liner_tipo_solto" class="form-control">
+                            <option value="solto dentro" selected>Solto dentro do bag</option>
+                            <option value="amarrado">Apenas amarrado na válvula de descarga</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-top: 0; margin-bottom: 0;">
                         <label>Sobra de Liner/Cliente (cm)</label>
                         <input type="number" id="in_liner_sobra" class="form-control" placeholder="0" value="0">
                     </div>
@@ -1154,6 +1169,26 @@
                 if (inLinerFix) inLinerFix.value = defaultFix;
             }
 
+            // Toggle visibility of sub-inputs for Colado/Solto
+            const inLinerFixSelect = document.getElementById('in_liner_fixacao');
+            const groupLinerTipoCola = document.getElementById('group_liner_tipo_cola');
+            const groupLinerTipoSolto = document.getElementById('group_liner_tipo_solto');
+            
+            if (groupLinerTipoCola && groupLinerTipoSolto) {
+                if (linerVal === 'com') {
+                    if (inLinerFixSelect && inLinerFixSelect.value === 'colado') {
+                        groupLinerTipoCola.style.display = 'block';
+                        groupLinerTipoSolto.style.display = 'none';
+                    } else {
+                        groupLinerTipoCola.style.display = 'none';
+                        groupLinerTipoSolto.style.display = 'block';
+                    }
+                } else {
+                    groupLinerTipoCola.style.display = 'none';
+                    groupLinerTipoSolto.style.display = 'none';
+                }
+            }
+
             // 6. Enforce Valve constraints dynamically
             // Toggle visibility of Válvula de Enchimento inputs based on Model=C6 and Material=Fertilizante
             const sectionValveEnch = document.getElementById('section_valve_enchimento');
@@ -1483,19 +1518,68 @@
 
             // --- DESCRIÇÃO ---
             let desc = "";
-            if (padrao.toLowerCase().includes('reutilizável')) {
-                desc = descriptions["Multi Way"];
+            if (type === 'C6' && material === 'Fertilizante') {
+                let linerPhrase = "";
+                if (liner === 'com') {
+                    const corteLiner = document.getElementById('in_liner_corte').value;
+                    const linerFixacao = document.getElementById('in_liner_fixacao').value;
+
+                    let cortePart = "";
+                    if (corteLiner === 'soldado') {
+                        cortePart = "LINER SOLDADO NO FUNDO";
+                    } else {
+                        cortePart = "LINER SEM SOLDA NO FUNDO";
+                    }
+
+                    let fixacaoPart = "";
+                    if (linerFixacao === 'colado') {
+                        const colaTipo = document.getElementById('in_liner_tipo_cola').value;
+                        if (colaTipo === 'cola lateral/fundo') {
+                            fixacaoPart = ", COLADO NAS 04 PAREDES LATERAIS E NO FUNDO DO BIG BAG";
+                        } else if (colaTipo === 'cola lateral') {
+                            fixacaoPart = ", COLADO NAS 04 PAREDES LATERAIS E SEM COLA NO FUNDO DO BIG BAG";
+                        } else if (colaTipo === 'cola fundo') {
+                            fixacaoPart = ", COLADO NO FUNDO E SEM COLA NAS PAREDES LATERAIS DO BIG BAG";
+                        }
+                    } else { // solto
+                        const soltoTipo = document.getElementById('in_liner_tipo_solto').value;
+                        if (soltoTipo === 'solto dentro') {
+                            fixacaoPart = " / SEM COLA SOLTO DENTRO BAG";
+                        } else {
+                            fixacaoPart = ", SEM COLA, APENAS AMARRADO NA VÁLVULA DE DESCARGA";
+                        }
+                    }
+                    linerPhrase = cortePart + fixacaoPart + "\n";
+                }
+
+                desc = linerPhrase + 
+`FIO 1260 DN : PREPARAÇÃO DAS VALVULAS, ACESSÓRIOS, TOPO;
+FIO 1800 DN : ALÇAS;
+FIO 2520 DN : FUNDO;
+COSTURA DAS ALÇAS: COSTURADAS EXTERNAMENTE
+COSTURA VÁLVULA INFERIOR: FUNDO A FIO + VÁLVULA DE DESCARGA À FIO INTERNO
+COSTURA VÁLVULA SUPERIOR: TOPO À FIO + VÁLVULA DE ENCHIMENTO À FIO INTERNO
+COSTURA INFERIOR: CORPO COM DOBRA INTERNA + FUNDO COSTURADO À FIO EXTERNO
+PORTA DOCUMENTO IMPRESSO CENTRALIZADO NA FACE 'A' DO BIG BAG
+COSTURA SUPERIOR: CORPO + TOPO COSTURADO À FIO EXTERNO
+IMPRESSÃO: INSTRUÇÕES NA O.P`;
             } else {
-                desc = descriptions["One Way"];
+                if (padrao.toLowerCase().includes('reutilizável')) {
+                    desc = descriptions["Multi Way"];
+                } else {
+                    desc = descriptions["One Way"];
+                }
             }
 
             // --- PORTA DOCUMENTOS REPLACEMENT IN DESCRIPTION ---
             const portaDoc = document.getElementById('in_porta_documentos').value;
             if (portaDoc === 'sem imp') {
                 desc = desc.replace("PORTA DOCUMENTO IMPRESO", "PORTA DOCUMENTO SEM IMPRESSÃO");
+                desc = desc.replace("PORTA DOCUMENTO IMPRESSO", "PORTA DOCUMENTO SEM IMPRESSÃO");
                 desc = desc.replace("PORTA DOCUMENTO + ETIQUETA", "PORTA DOCUMENTO SEM IMPRESSÃO + ETIQUETA");
             } else {
-                desc = desc.replace("PORTA DOCUMENTO IMPRESO", "PORTA DOCUMENTO IMPRESSO");
+                desc = desc.replace("PORTA DOCUMENTO IMPRESO", "PORTA DOCUMENTO IMPRESO");
+                desc = desc.replace("PORTA DOCUMENTO IMPRESSO", "PORTA DOCUMENTO IMPRESSO");
                 desc = desc.replace("PORTA DOCUMENTO + ETIQUETA", "PORTA DOCUMENTO COM IMPRESSÃO + ETIQUETA");
             }
             outDesc.textContent = desc || '--';
