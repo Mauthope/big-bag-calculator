@@ -1547,6 +1547,10 @@
                     };
 
                     linerPhrase = (linerPhrases[keyComb] || "") + "\n";
+                    const sobraVal = parseFloat(document.getElementById('in_liner_sobra').value) || 0;
+                    if (sobraVal > 0) {
+                        linerPhrase += `LINER ${sobraVal} CM PARA FORA DA VÁLVULA DE ENCHIMENTO\n`;
+                    }
                 }
 
                 desc = linerPhrase + 
@@ -1565,6 +1569,12 @@ IMPRESSÃO: INSTRUÇÕES NA O.P`;
                     desc = descriptions["Multi Way"];
                 } else {
                     desc = descriptions["One Way"];
+                }
+                if (liner === 'com') {
+                    const sobraVal = parseFloat(document.getElementById('in_liner_sobra').value) || 0;
+                    if (sobraVal > 0) {
+                        desc = `LINER ${sobraVal} CM PARA FORA DA VÁLVULA DE ENCHIMENTO\n` + desc;
+                    }
                 }
             }
 
